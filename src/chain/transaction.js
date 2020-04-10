@@ -39,11 +39,10 @@ export default class TransactionInfo extends Transaction {
 		var txbody = NaN;
 		let keypair = this.args.keypair;
 		// let timestamp = new Date().getTime();
-		/////////////////////////////
         txbody = TransactionBody.create();
 
-		if (keypair.nonce) {
-			txbody.nonce = keypair.nonce;
+		if (this.args.nonce) {
+			txbody.nonce = this.args.nonce;
 		}
         txbody.address = Buffer.from(this.removePrefix(keypair.hexAddress),'hex');
         
@@ -51,20 +50,21 @@ export default class TransactionInfo extends Transaction {
             txbody.ext_data = Buffer.from(this.args.ext_data, 'hex');
         }
 
+        if(this.args.code_data !== null){
+			txbody.code_data = Buffer.from(this.args.code_data, 'hex');
+		}
+
         if (this.args.outputs !== null){
             for(let i=0;i<this.args.outputs.length;i++) { 
                 txbody.outputs.push(proto.load("TransactionOutput").create(this.args.outputs[i]))
             }
         }
 
-        if(this.args.code_data !== null){
-			txbody.code_data = Buffer.from(this.args.code_data, 'hex');
-		}
+		txbody.timestamp = new Date().getTime();
+		txbody.inner_codetype = this.args.inner_codetype;
 
-        txbody.timestamp = new Date().getTime();
-
-		var  ecdata = Buffer.from(TransactionBody.encode(txbody).finish());
-        var ecdataSign = keypair.ecHexSign(ecdata);
+		let ecdata = Buffer.from(TransactionBody.encode(txbody).finish());
+        let ecdataSign = keypair.ecHexSign(ecdata);
 
 		let transactionInfo = proto.load("TransactionInfo");
         let tinfo = transactionInfo.create({
@@ -72,6 +72,7 @@ export default class TransactionInfo extends Transaction {
 			signature:Buffer.from(ecdataSign,"hex")
 		});
 		
+		console.log("tinfo==="+tinfo);
 		let tx = Buffer.from(transactionInfo.encode(tinfo).finish(),"hex").toString("hex");
 		
         return {"tx":tx};

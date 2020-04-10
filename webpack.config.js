@@ -1,4 +1,4 @@
-webpack.config.jsvar HtmlWebpackPlugin = require('html-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -41,7 +41,7 @@ module.exports = {
 	      {
 	        test: /\.(proto)$/,
 	       	loader: 'raw-loader',
-	       	include:[path.resolve(__dirname, "src/cwv/proto")],
+	       	include:[path.resolve(__dirname, "src/chain/proto")],
 	      },
 	      
 	    ],
@@ -53,9 +53,9 @@ module.exports = {
    		 }
   	},
   	output: {
-    	filename: 'cwv.js',
+    	filename: 'brewchain.js',
     	path: path.resolve(__dirname, 'dist'),
-    	library:'cwv',
+    	library:'brewchain',
     	libraryTarget:'commonjs2',
     	libraryExport:'default'
   	},

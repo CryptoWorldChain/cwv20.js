@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package org.brewchain.mcore.actuators.tokencontracts721;
+
+message ContractRC721 {
+	//函数操作类型：{
+	enum Function721{
+		UNKNOW = 0;
+		CONSTRUCT_FIXSUPPLY = 1;
+		CONSTRUCT_PRINTABLE = 2;
+		TRANSFERS  = 3;
+		PRINT = 4;
+		BURN = 5;
+		ADDMANAGERS = 6;
+		RMMANAGERS = 7;
+	}
+	Function721	function = 1;//
+	bytes	from = 2;
+	
+	message  ReceiveList{
+		bytes		address=1;
+		repeated  bytes	token_ids = 2;
+		repeated  bytes token_URI = 3;//
+	}
+	repeated ReceiveList  tos = 3;
+	
+	
+	bytes   ext_datas = 6;//扩展信息
+	
+	
+	string	name = 10;//构建函数时候使用
+	string	symbol = 11;//构建函数时候使用
+}
+
+message	TokenRC721Value{
+	bytes token_id = 1;
+	bytes owner_addr = 3;
+	bytes token_URI = 4;
+	int32	nonce = 5;
+	int32	owner_index = 6;//在owner的位置索引
+	int32	contract_index = 7;//在contract的位置索引
+	bytes   transfer_ext_data = 8;//转账时候的扩展信息
+}
+
+
+message	TokenRC721Ownership{
+	bytes balance = 1;
+	bytes locked = 2;
+}
+
+message TokenRC721Info{
+	bytes	creator = 1;//创建者
+	int64	create_time = 2;
+	bytes	totalSupply = 3;//总量
+	repeated  bytes	managers = 4;//管理员
+	string	name = 5;
+	string	symbol = 6;
+	bytes	ext_datas = 8;
+	bool	printable = 9;//是否可以增发
+	bytes	storageTrieRoot = 10;//存储根
+}
+
+message ReqCall721Contract{
+	ContractRC721 data = 1;
+}
+
+message RespCall721Contract{
+	bytes datas = 1;
+	int32 ret_code = 2;
+	string	ret_message = 3;
+}
+
+message ReqQueryRC721TokenInfo{
+	bytes  token_address = 1;
+}
+
+message RespQueryRC721TokenInfo{
+	bytes 	token_address = 1;
+	TokenRC721Info info = 2;
+	int32	token_nonce =3;
+	int32 	ret_code = 10;
+	string	ret_message = 11;
+}
+
+message ReqQueryRC721TokenValue{
+	bytes	token_address = 1;
+	bytes	owner_address = 2;
+	int64	token_index_start = 3;
+	int64	token_index_end = 4;
+}
+
+message RespQueryRC721TokenValue{
+	bytes 	token_address = 1;
+	bytes	owner_address = 2;
+	TokenRC721Ownership value = 3;
+	
+	bytes	totalSupply = 4;//总量
+	string	name = 5;
+	string	symbol = 6;
+
+	int32 ret_code = 10;
+	string	ret_message = 11;
+}
+
+message ReqQueryRC721TokenWho{
+	bytes	token_address = 1;
+	repeated bytes	token_ids = 2;
+}
+
+message RespQueryRC721TokenWho{
+	bytes 	token_address = 1;
+	repeated bytes	owner_address = 2;
+	repeated TokenRC721Value values = 3;
+	
+	bytes	totalSupply = 4;//总量
+	string	name = 5;
+	string	symbol = 6;
+
+	int32 ret_code = 10;
+	string	ret_message = 11;
+}
+
+
+message ReqQueryRC721TokenByIndexs{
+	bytes	token_address = 1;
+	repeated int32 ids = 2;
+}
+
+message ReqQueryRC721TokenByRange{
+	bytes	token_address = 1;
+	int32 	start_index = 2;
+	int32 	end_index = 3;
+}
+
+message ReqQueryRC721TokenByOwnerIndexs{
+	bytes	token_address = 1;
+	bytes	token_owner = 2;
+	repeated int32 ids = 3;
+}
+
+message ReqQueryRC721TokenByOwnerRange{
+	bytes	token_address = 1;
+	bytes	token_owner = 2;
+	int32 	start_index = 3;
+	int32 	end_index = 4;
+
+}
+
+message RespQueryRC721Tokens{
+	bytes 	token_address = 1;
+	repeated TokenRC721Value values = 3;
+	
+	bytes	totalSupply = 4;//总量
+	string	name = 5;
+	string	symbol = 6;
+
+	int32 ret_code = 10;
+	string	ret_message = 11;
+}

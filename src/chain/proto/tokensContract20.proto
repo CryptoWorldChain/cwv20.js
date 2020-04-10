@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package org.brewchain.mcore.actuators.tokencontracts20;
+
+	
+message ContractRC20 {
+	//函数操作类型：{
+	//1.transfers(address to[], uint256 value[]) public returns (bool);
+	//2.Deprecated transferFrom(address from, address to[], uint256 value[]) public returns (bool);//
+	//3.Deprecated approve(address to[], uint256 value[]) public returns (bool);
+	//4.print(address to[],uint256 value[]) public returns(bool);
+	//5.burn(uint value) public returns(bool);销毁
+	//6.construct_fixSupply(address to[],uint256 []values) public returns (bool);创建合约
+	//7.construct_printable(address to[],uint256 []values,bytes exdatas) public returns (bool);创建合约
+	//8.addManagers(address to[]);
+	//9.rmManagers(address to[]);
+	//}
+	enum Function20{
+		UNKNOW = 0;
+		CONSTRUCT_FIXSUPPLY = 1;
+		CONSTRUCT_PRINTABLE = 2;
+		TRANSFERS  = 3;
+		PRINT = 4;
+		BURN = 5;
+		ADDMANAGERS = 6;
+		RMMANAGERS = 7;
+	}
+	Function20	function = 1;//
+	bytes	from = 2;
+	repeated  bytes	tos=3;
+	repeated  bytes	values = 4;
+	bytes   ext_datas = 6;//扩展信息
+	
+	string	name = 10;//构建函数时候使用
+	string	symbol = 11;//构建函数时候使用
+	int64	decimals = 12;//精度构建函数时候使用
+	
+}
+
+message	TokenRC20Value{
+	bytes balance = 1;
+	bytes locked = 2;
+	bytes ext_data = 3;
+}
+
+message TokenRC20Info{
+	bytes	creator = 1;//创建者
+	int64	create_time = 2;
+	bytes	totalSupply = 3;//总量
+	repeated  bytes	managers = 4;//管理员
+	string	name = 5;
+	string	symbol = 6;
+	int64	decimals = 7;//精度
+	bytes	ext_datas = 8;
+	bool	printable = 9;//是否可以增发
+	bytes	storageTrieRoot = 10;//存储根
+}
+
+message ReqCall20Contract{
+	ContractRC20 data = 1;
+}
+
+message RespCall20Contract{
+	bytes datas = 1;
+	int32 ret_code = 2;
+	string	ret_message = 3;
+}
+
+message ReqQueryRC20TokenInfo{
+	bytes	token_address = 1;	
+}
+
+message RespQueryRC20TokenInfo{
+	bytes 	token_address = 1;
+	TokenRC20Info info = 2;
+	int32	token_nonce =3;
+	int32 ret_code = 10;
+	string	ret_message = 11;
+}
+
+message ReqQueryRC20TokenValue{
+	bytes	token_address = 1;
+	bytes	owner_address = 2;
+}
+
+message RespQueryRC20TokenValue{
+	bytes 	token_address = 1;
+	bytes	owner_address = 2;
+	TokenRC20Value value = 3;
+	
+	bytes	totalSupply = 4;//总量
+	string	name = 5;
+	string	symbol = 6;
+	int64	decimals = 7;//精度
+
+	int32 ret_code = 10;
+	string	ret_message = 11;
+}
+
+
+

@@ -7,14 +7,6 @@ import KeyPair from "./keypair";
 import BN from 'bn.js';
 import proto from './protos'
 
-var getBlockByNumber = PatternMethod._(_.template('{"height":"<%- args[0] %>"}'), "bct","gbn");
-var getBalance = PatternMethod._(_.template('{"address":"<%- args[0] %>"}'), "act", "gac");
-var getBlockByMax = PatternMethod._(_.template('{"address":"<%- args[0] %>"}'), "bct", "glb");
-var getBlockByHash = PatternMethod._(_.template('{"hash":"<%- args[0] %>"}'), "bct", "gbh");
-var getTransaction = PatternMethod._(_.template('{"hash":"<%- args[0] %>"}'), "tct", "gth");
-var getStorageValue = PatternMethod._(_.template('{"address":"<%- args[0] %>","key":["<%- args[1] %>"]}'), "act", "qcs");
-var sendRawTransaction = PatternMethod._(_.template('""'), "tct", "mtx");
-
 class PatternMethod extends Method {
 	constructor(pattern, uri) {
 		super(pattern)
@@ -50,6 +42,14 @@ class PatternMethod extends Method {
 	}
 
 }
+
+var getBlockByNumber = PatternMethod._(_.template('{"height":"<%- args[0] %>"}'), "bct","gbn");
+var getBalance = PatternMethod._(_.template('{"address":"<%- args[0] %>"}'), "act", "gac");
+var getBlockByMax = PatternMethod._(_.template('{"address":"<%- args[0] %>"}'), "bct", "glb");
+var getBlockByHash = PatternMethod._(_.template('{"hash":"<%- args[0] %>"}'), "bct", "gbh");
+var getTransaction = PatternMethod._(_.template('{"hash":"<%- args[0] %>"}'), "tct", "gth");
+var getStorageValue = PatternMethod._(_.template('{"address":"<%- args[0] %>","key":["<%- args[1] %>"]}'), "act", "qcs");
+var sendRawTransaction = PatternMethod._(_.template('""'), "tct", "mtx");
 
 var validOpts = function (opts) {
 	var keypair = opts.keypair;
@@ -105,7 +105,7 @@ var validOpts = function (opts) {
  * evfs fileupload
  * args={}
 */
-var __sign = function(from, nonce, type, exdata, args){
+var __sign = function(from, type, exdata, args){
 	//发送交易
 	if (!from) {
 		return new Promise((resolve, reject) => {
@@ -121,137 +121,17 @@ var __sign = function(from, nonce, type, exdata, args){
 	
 	var opts = {};
 	switch (type) {
-		case transactionType.OWNERTOKEN:
-			if (!args.token || !args.amount || isNullOrUndefined(args.opCode)) {
-				reject({ "msg": "缺少token 或 amount 或 opcode" });
-			} else {
-				transactionData.type = enums.OWNERTOKEN;
-
-				transactionData.OwnerTokenData = {};
-				transactionData.OwnerTokenData.token = Buffer.from(token, "ascii");
-				transactionData.OwnerTokenData.amount = new BN(amount).toArrayLike(Buffer);
-				transactionData.OwnerTokenData.opCode = opCode;
-				opts = getTransactionOpts(from, nonce, null, transactionData);
-			}
+		case transactionType.RC20_CONTRACT:
+			console.log("RC20_CONTRACT");
 			break;
-		case transactionType.PUBLICCRYPTOTOKEN:
-			/**
-			 * args = {"total":10, "symbol":"", "code":"","name":"",key:[],value:[]}
-			 */
-			if (!args || !args.data) {
-				reject("缺少参数data");
-			} else {
-				let transactionData = {};
-				transactionData.type = transactionType.PUBLICCRYPTOTOKEN;
-
-				transactionData.cryptoTokenData = {};
-				transactionData.cryptoTokenData.total = args.total;
-				transactionData.cryptoTokenData.symbol = args.symbol;
-				transactionData.cryptoTokenData.name = args.name;
-				transactionData.cryptoTokenData.code = args.code;
-				transactionData.cryptoTokenData.prop = {}
-				if (Array.isArray(args.key)){
-					if (args.key.length>0){
-						transactionData.cryptoTokenData.prop.key=args.key
-					}
-				}
-				if (Array.isArray(args.value)){
-					if (args.value.length>0){
-						transactionData.cryptoTokenData.prop.value=args.value
-					}
-				}
-				
-				opts = getTransactionOpts(from, nonce, exdata, transactionData);
-			}
+		case transactionType.MULI_SIGN:
+			console.log("RC20_CONTRACT");
 			break;
-		case transactionType.PUBLICCONTRACT:
-			/** 
-			 * args = {"data":"", "amount":""}
-			 * 
-			*/
-			if (!args || !args.data) {
-				reject("缺少参数data");
-			} else {
-				let transactionData = {};
-				transactionData.type = transactionType.PUBLICCONTRACT;
-				transactionData.publicContractData = {};
-				transactionData.publicContractData.data = Buffer.from(args.data, "hex");
-				if (!args.amount) {
-					args.amount = null;
-					transactionData.publicContractData.amount = args.amount;
-				} else {
-					transactionData.publicContractData.amount = new BN(args.amount).toArrayLike(Buffer);
-				}
-				
-				opts = getTransactionOpts(from, nonce, exdata, transactionData);
-			}
+		case transactionType.CVM_CONTRACT:
+			console.log("CVM_CONTRACT");
 			break;
-		case transactionType.CALLCONTRACT:
-			/** 
-			 * args = {"contract":"", "data":"", "amount":""}
-			 * 
-			*/
-			if (!args.contract || !args.data) {
-				reject("缺少参数contract 或 data");
-			} else {
-				let transactionData = {};
-				transactionData.type = transactionType.CALLCONTRACT;
-				transactionData.callContractData = {};
-				transactionData.callContractData.data = Buffer.from(args.data, "hex");
-				transactionData.callContractData.contract = Buffer.from(args.contract, "hex");
-				if (!args.amount) {
-					args.amount = null;
-					transactionData.callContractData.amount = args.amount;
-				} else {
-					transactionData.callContractData.amount = new BN(args.amount).toArrayLike(Buffer);
-				}
-				opts = getTransactionOpts(from, nonce, exdata, transactionData);
-			}
-
-			break;
-		case transactionType.EVFSREQFILEUPLOAD:
-			/**
-			 * args = {"evfs":object}
-			 */
-			if (!args.evfs){
-				reject("缺少参数evfs");
-			}else{
-				let transactionData = {};
-				transactionData.type = transactionType.EVFSREQFILEUPLOAD;
-				let EVFSReqFileUploadData=proto.load("EVFSReqFileUploadData");
-				let jsonDecode=EVFSReqFileUploadData.decode(Buffer.from(args.evfs,'hex'));
-				transactionData.reqFileUploadData = jsonDecode;
-
-				opts = getTransactionOpts(from, nonce, exdata, transactionData);
-			}
-			break;
-		case transactionType.EVFSAUTHORISEFILEOP:
-			/**
-			 * args = {"evfs":""}
-			 */
-			if (!args.fileHash){
-				reject("缺少参数fileHash或 addAddrs 或 removeAddrs");
-			}else{
-				let transactionData = {};
-				transactionData.type = transactionType.EVFSAUTHORISEFILEOP;
-				transactionData.authoriseFileOPData={};
-				transactionData.authoriseFileOPData.fileHash = Buffer.from(args.fileHash, "hex");
-				if(args.addAddrs){
-					let addAddrs = [];
-					for(let j=0;j<args.addAddrs.length;j++){
-						addAddrs.push(Buffer.from(args.addAddrs[j],"hex"));
-					}
-					transactionData.authoriseFileOPData.addAddrs = addAddrs;
-				}
-				if(args.removeAddrs){
-					let removeAddrs = [];
-					for(let j=0;j<args.removeAddrs.length;j++){
-						removeAddrs.push(Buffer.from(args.removeAddrs[j],"hex"));
-					}
-					transactionData.authoriseFileOPData.removeAddrs = removeAddrs;
-				}
-				opts = getTransactionOpts(from, nonce, exdata, transactionData);
-			}
+		case transactionType.JSVM_CONTRACT:
+			console.log("JSVM_CONTRACT");
 			break;
 		default:
 			/** 
@@ -259,13 +139,13 @@ var __sign = function(from, nonce, type, exdata, args){
 			 * 
 			*/
 			let outs = generateOutputs(args);
-			opts = getTransactionOpts(from, nonce, exdata, null, outs);
+			opts = getTransactionOpts(from, type, exdata, null, outs);
 			break;
 	}
 	return new TransactionInfo(opts).genBody();
 }
-var __sendTxTransaction = function (from, nonce, type, exdata, args) {
-	let result=__sign(from, nonce, type, exdata, args);
+var __sendTxTransaction = function (from, type, exdata, args) {
+	let result=__sign(from, type, exdata, args);
 	return sendRawTransaction.request(result);
 };
 
@@ -299,14 +179,14 @@ var generateOutputs = function (outputs){
     return outs;
 }
 
-var getTransactionOpts = function (from, nonce, exdata, data, outputs) {
+var getTransactionOpts = function (from, type, extdata, codedata, outputs) {
 	var opts = {};
-	opts.from = from.keypair.address;
 	opts.keypair = from.keypair;
+	let nonce=from.keypair.nonce;
 	opts.nonce = (nonce === 0 || isNaN(nonce)) ? null : nonce;
-
-	opts.ext_data = exdata || null;
-	opts.code_data = data || null;
+	opts.inner_codetype = type ;
+	opts.ext_data = extdata || null;
+	opts.code_data = codedata || null;
 	opts.outputs = outputs || null;
 
 	return opts;
@@ -388,8 +268,13 @@ export default {
 	 * 		{"address","symbol":"house","cryptoToken":["hash2","hash3"]}
 	 * 	]
 	 */
-	transfer: function (from, exdata, args) {
-		return __sendTxTransaction(from, from.keypair.nonce, transactionType.NORMAL, exdata, args);
+	transfer: function (from, args) {
+		return __sendTxTransaction(from, transactionType.NORMAL, null, args);
+	},
+	sign:function(from,args){
+		// return __sendTxTransaction(from, transactionType.NORMAL, null, args);
+		return __sign(from, transactionType.NORMAL , null, args);
+
 	},
 	/**
 	 * 交易hash签名
