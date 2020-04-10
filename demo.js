@@ -35,3 +35,6 @@ chain.rpc.transfer(from,args).then(function(result){
     console.log(result)
 })
 
+chain.rpc.getBalance("a5c31be225011ee6ecceaf3b9b3696db01a20d6c").then(function(result){
+    console.log(result)
+})
