@@ -94,7 +94,7 @@ var kp = brew.KeyPair.genFromPrikey(
 kp.nonce=10;
 var from={keypair:kp};
 var args=[{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":1}]
-brew.rpc.transfer(from,exdata,args).then(function(result){
+brew.rpc.transfer(from,args).then(function(result){
     console.log(result)
 })
 ```
