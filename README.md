@@ -106,7 +106,7 @@ brew.rpc.getTransaction('f9bea09140e8e2eb2956976c3373418e2a935d821732d86bce33117
     console.log(result)
 })
 ```
-
+var tx=brew.rpc.sign(from,args)
 
 ### License
 

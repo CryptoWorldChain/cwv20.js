@@ -32,6 +32,7 @@ message TransactionBody {
 	bytes   code_data = 7;//指令数据
 	bytes   ext_data = 8;
 	int64   timestamp = 9;
+	int64 	feehi = 10;//手续费高位
 }
 
 message TransactionOutput {

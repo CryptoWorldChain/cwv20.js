@@ -3,33 +3,30 @@ syntax = "proto3";
 package org.brewchain.mcore.actuators.tokencontracts721;
 
 message ContractRC721 {
-	//函数操作类型：{
-	enum Function721{
-		UNKNOW = 0;
-		CONSTRUCT_FIXSUPPLY = 1;
-		CONSTRUCT_PRINTABLE = 2;
-		TRANSFERS  = 3;
-		PRINT = 4;
-		BURN = 5;
-		ADDMANAGERS = 6;
-		RMMANAGERS = 7;
-	}
 	Function721	function = 1;//
 	bytes	from = 2;
 	
-	message  ReceiveList{
-		bytes		address=1;
-		repeated  bytes	token_ids = 2;
-		repeated  bytes token_URI = 3;//
-	}
 	repeated ReceiveList  tos = 3;
-	
-	
 	bytes   ext_datas = 6;//扩展信息
-	
-	
 	string	name = 10;//构建函数时候使用
 	string	symbol = 11;//构建函数时候使用
+}
+
+message  ReceiveList{
+	bytes		address=1;
+	repeated  bytes	token_ids = 2;
+	repeated  bytes token_URI = 3;//
+}
+
+enum Function721{
+	UNKNOW = 0;
+	CONSTRUCT_FIXSUPPLY = 1;
+	CONSTRUCT_PRINTABLE = 2;
+	TRANSFERS  = 3;
+	PRINT = 4;
+	BURN = 5;
+	ADDMANAGERS = 6;
+	RMMANAGERS = 7;
 }
 
 message	TokenRC721Value{

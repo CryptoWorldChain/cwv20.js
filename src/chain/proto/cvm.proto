@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package org.brewchain.cvm.model;
+
+message CVMContract {
+	bytes	datas = 1;
+	bool	parrallel = 2;//是否并行执行	
+}

@@ -105,7 +105,7 @@ var validOpts = function (opts) {
  * evfs fileupload
  * args={}
 */
-var __sign = function(from, type, exdata, args){
+var __sign = function(from, type, args){
 	//发送交易
 	if (!from) {
 		return new Promise((resolve, reject) => {
@@ -123,29 +123,63 @@ var __sign = function(from, type, exdata, args){
 	switch (type) {
 		case transactionType.RC20_CONTRACT:
 			console.log("RC20_CONTRACT");
+			//  @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":object} 
+			let ContractRC20 = proto.load("ContractRC20")
+			let contractRC20 = ContractRC20.create();
+			contractRC20.function=args.function;
+			if(args.hasOwnProperty("name")){
+				contractRC20.name=Buffer.from(args.name,"ascii");
+			}
+			if(args.hasOwnProperty("symbol")){
+				contractRC20.symbol=Buffer.from(args.symbol,"ascii");
+			}
+			if(args.hasOwnProperty("decimals")){
+				contractRC20.decimals=args.decimals;
+			}
+
+			if(args.tos){
+				let tos = [];
+				for(let j=0;j<args.tos.length;j++){
+					tos.push(Buffer.from(args.tos[j],"hex"));
+				}
+				contractRC20.tos = tos;
+			}
+			if(args.values){
+				let values = [];
+				for(let j=0;j<args.values.length;j++){
+					values.push(new BN(args.values[j]).toArrayLike(Buffer));
+				}
+				contractRC20.values = values;
+			}
+			console.log("ContractRC20"+JSON.stringify(contractRC20));
+			let codedata=ContractRC20.encode(contractRC20).finish();
+			opts = getTransactionOpts(from, type, args.ext_datas, codedata);
 			break;
-		case transactionType.MULI_SIGN:
-			console.log("RC20_CONTRACT");
-			break;
-		case transactionType.CVM_CONTRACT:
-			console.log("CVM_CONTRACT");
+		case transactionType.RC721_CONTRACT:
+			console.log("RC721_CONTRACT");
 			break;
 		case transactionType.JSVM_CONTRACT:
-			console.log("JSVM_CONTRACT");
+		case transactionType.CVM_CONTRACT:
+			console.log("CVM_CONTRACT || JSVM_CONTRACT",type);
+			if (!args || !args.data) {
+				reject("缺少参数data");
+			} else {
+				let CVMContract = proto.load("CVMContract");
+				let cvmContract = CVMContract.create();
+				cvmContract.datas=Buffer.from(args.data,'hex');
+				let codedata=CVMContract.encode(cvmContract).finish();
+				opts = getTransactionOpts(from, type, null, codedata);
+			}
 			break;
 		default:
-			/** 
-			 * args = [{"address":"","amount":100,"token":"BREW","tokenAmount":1000,"symbol":"house","cryptoToken":["hash0","hash1"]},{}]
-			 * 
-			*/
 			let outs = generateOutputs(args);
-			opts = getTransactionOpts(from, type, exdata, null, outs);
+			opts = getTransactionOpts(from, type, null, null, outs);
 			break;
 	}
 	return new TransactionInfo(opts).genBody();
 }
-var __sendTxTransaction = function (from, type, exdata, args) {
-	let result=__sign(from, type, exdata, args);
+var __sendTxTransaction = function (from, type, args) {
+	let result=__sign(from, type, args);
 	return sendRawTransaction.request(result);
 };
 
@@ -191,6 +225,7 @@ var getTransactionOpts = function (from, type, extdata, codedata, outputs) {
 
 	return opts;
 }
+//transfer类型
 var transactionType = {
 	NORMAL :0,//普通交易
 	MULI_SIGN : 1,//多重签名交易
@@ -199,6 +234,16 @@ var transactionType = {
 	CVM_CONTRACT : 4,//CVM合约调用
 	JSVM_CONTRACT : 5//JSVM合约调用
 };
+//crc20类型
+var functionType = {
+	CONSTRUCT_FIXSUPPLY : 1,
+	CONSTRUCT_PRINTABLE : 2,
+	TRANSFERS  : 3,
+	PRINT : 4,
+	BURN : 5,
+	ADDMANAGERS : 6,
+	RMMANAGERS : 7
+}
 
 var removePrefix = function(addr){
 	if(addr.startsWith('0x')){
@@ -249,7 +294,7 @@ export default {
 		return transactionType;
 	},
 	/**
-	 * 转账
+	 * transfer normal
 	 * @param {*} from {"keypair":{"address":"","privateKey":""}, "nonce": 0}
 	 * @param {*} exdata 明文，方法里做ascii编码
 	 * @param {*} args 
@@ -269,11 +314,42 @@ export default {
 	 * 	]
 	 */
 	transfer: function (from, args) {
-		return __sendTxTransaction(from, transactionType.NORMAL, null, args);
+		return __sendTxTransaction(from, transactionType.NORMAL, args);
 	},
+	/**
+	 * create contract
+	 * @param {*} from 
+	 * @param {*} args {"data":"hexstring"}
+	 */
+	createContract:function(from,args){
+		return __sendTxTransaction(from, transactionType.CVM_CONTRACT, args);
+	},
+	/**
+	 * call contract
+	 * @param {*} from 
+	 * @param {*} args {"data":"hexstring"}
+	 */
+	callContract:function(from,args){
+		return __sendTxTransaction(from, transactionType.JSVM_CONTRACT, args);
+	},
+	/**
+	 * 发布token
+	 * @param {*} from 
+	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":object} 
+	 */
+	publicToken:function(from,args){
+		args.function=functionType.CONSTRUCT_PRINTABLE;
+		console.log("args:"+JSON.stringify(args));
+		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
+	},
+	/**
+	 * sign
+	 * @param {*} from 
+	 * @param {*} args 
+	 */
 	sign:function(from,args){
 		// return __sendTxTransaction(from, transactionType.NORMAL, null, args);
-		return __sign(from, transactionType.NORMAL , null, args);
+		return __sign(from, transactionType.NORMAL, args);
 
 	},
 	/**

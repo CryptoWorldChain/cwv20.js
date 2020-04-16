@@ -2,29 +2,7 @@ syntax = "proto3";
 
 package org.brewchain.mcore.actuators.tokencontracts20;
 
-	
 message ContractRC20 {
-	//函数操作类型：{
-	//1.transfers(address to[], uint256 value[]) public returns (bool);
-	//2.Deprecated transferFrom(address from, address to[], uint256 value[]) public returns (bool);//
-	//3.Deprecated approve(address to[], uint256 value[]) public returns (bool);
-	//4.print(address to[],uint256 value[]) public returns(bool);
-	//5.burn(uint value) public returns(bool);销毁
-	//6.construct_fixSupply(address to[],uint256 []values) public returns (bool);创建合约
-	//7.construct_printable(address to[],uint256 []values,bytes exdatas) public returns (bool);创建合约
-	//8.addManagers(address to[]);
-	//9.rmManagers(address to[]);
-	//}
-	enum Function20{
-		UNKNOW = 0;
-		CONSTRUCT_FIXSUPPLY = 1;
-		CONSTRUCT_PRINTABLE = 2;
-		TRANSFERS  = 3;
-		PRINT = 4;
-		BURN = 5;
-		ADDMANAGERS = 6;
-		RMMANAGERS = 7;
-	}
 	Function20	function = 1;//
 	bytes	from = 2;
 	repeated  bytes	tos=3;
@@ -34,7 +12,17 @@ message ContractRC20 {
 	string	name = 10;//构建函数时候使用
 	string	symbol = 11;//构建函数时候使用
 	int64	decimals = 12;//精度构建函数时候使用
-	
+}
+
+enum Function20{
+	UNKNOW = 0;
+	CONSTRUCT_FIXSUPPLY = 1;
+	CONSTRUCT_PRINTABLE = 2;
+	TRANSFERS  = 3;
+	PRINT = 4;
+	BURN = 5;
+	ADDMANAGERS = 6;
+	RMMANAGERS = 7;
 }
 
 message	TokenRC20Value{
