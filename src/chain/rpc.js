@@ -166,7 +166,8 @@ var __sign = function(from, type, args){
 			} else {
 				let CVMContract = proto.load("CVMContract");
 				let cvmContract = CVMContract.create();
-				cvmContract.datas=Buffer.from(args.data,'hex');
+				cvmContract.parrallel=true;
+				cvmContract.datas=args.data;
 				let codedata=CVMContract.encode(cvmContract).finish();
 				opts = getTransactionOpts(from, type, null, codedata);
 			}
