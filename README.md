@@ -65,40 +65,6 @@ fs.writeSync(fd,JSON.stringify(json));
 console.log('keypair',kp);
 ```
 
-Send transfer，support balance transfer，token transfer， crypto token transfer 。
-
-```js
-const brew=require('brewchain.js');
-var kp = brew.KeyPair.genFromPrikey(
-  '89611e9ed751b2bb0f2a84d1b364bd6ef97a512a7ad0b1b50241168ff3add985')
-/**
-* transfer
-* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
-* @param {*} exdata Plaintext
-* @param {*} args 
-* 	transfer balance
-* 	args=[{"address":"","amount":100},{"address":"", "amount":"20"}]
-* 
-* 	transfer token
-* 	args=[
-* 		{"address":"","token":"AAA","tokenAmount":"1000"},
-* 		{"address":"","token":"AAA","tokenAmount":"2000"}
-*		]
-* 
-* 	transfer crc721 token
-* 	args=[
-* 		{"address":"","symbol":"house","cryptoToken":["hash0","hash1"]},
-* 		{"address":"","symbol":"house","cryptoToken":["hash2","hash3"]}
-* 	]
-*/
-kp.nonce=10;
-var from={keypair:kp};
-var args=[{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":1}]
-brew.rpc.transfer(from,args).then(function(result){
-    console.log(result)
-})
-```
-
 Get transaction information through transaction hash
 ```js
 const brew=require('brewchain.js');
@@ -106,7 +72,57 @@ brew.rpc.getTransaction('f9bea09140e8e2eb2956976c3373418e2a935d821732d86bce33117
     console.log(result)
 })
 ```
-var tx=brew.rpc.sign(from,args)
+
+Send transfer，support balance transfer，token transfer， crypto token transfer 。
+
+```js
+const brew=require('brewchain.js');
+var kp = brew.KeyPair.genFromPrikey(
+  '89611e9ed751b2bb0f2a84d1b364bd6ef97a512a7ad0b1b50241168ff3add985')
+  
+/**
+* transfer
+* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
+*/
+kp.nonce=10;
+var from={keypair:kp};
+var args=[{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":1}]
+brew.rpc.transfer(from,args).then(function(result){
+    console.log(result)
+}).catch(function(error){
+    console.log(error);
+})
+```
+
+Create a token transaction
+```js
+/**
+* create token
+* @param {*} from {"keypair":{"address":"","privateKey":""}, "nonce": 0}
+* @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18,"ext_datas":"hexstring"}
+*/
+cwv.rpc.createToken(from, args).then(function(result){
+    console.log(result)
+}).catch(function(error){
+    console.log(error);
+})
+```
+
+Create contract
+
+```js
+/**
+* create contract
+* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} args {"data":"hexstring"}
+*/
+cwv.rpc.createContract(from,args).then(function(result){
+    console.log(result)
+}).catch(function(error){
+    console.log(error);
+})
+```
 
 ### License
 
