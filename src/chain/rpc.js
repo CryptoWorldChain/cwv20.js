@@ -123,18 +123,18 @@ var __sign = function (from, type, args) {
 	switch (type) {
 		case transactionType.RC20_CONTRACT:
 			console.log("RC20_CONTRACT");
-			//  @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":object} 
 			let ContractRC20 = proto.load("ContractRC20")
 			let contractRC20 = ContractRC20.create();
-			contractRC20.function = args.function;
-			if (args.hasOwnProperty("name")) {
-				contractRC20.name = Buffer.from(args.name, "ascii");
+			contractRC20.function=args.function;
+			
+			if(args.hasOwnProperty("name")){
+				contractRC20.name=args.name;
 			}
-			if (args.hasOwnProperty("symbol")) {
-				contractRC20.symbol = Buffer.from(args.symbol, "ascii");
+			if(args.hasOwnProperty("symbol")){
+				contractRC20.symbol=args.symbol;
 			}
-			if (args.hasOwnProperty("decimals")) {
-				contractRC20.decimals = args.decimals;
+			if(args.hasOwnProperty("decimals")){
+				contractRC20.decimals==args.decimals;
 			}
 
 			if (args.tos) {
@@ -151,8 +151,8 @@ var __sign = function (from, type, args) {
 				}
 				contractRC20.values = values;
 			}
-			console.log("ContractRC20" + JSON.stringify(contractRC20));
-			let codedata = ContractRC20.encode(contractRC20).finish();
+			console.log("ContractRC20=="+JSON.stringify(contractRC20));
+			let codedata=ContractRC20.encode(contractRC20).finish();
 			opts = getTransactionOpts(from, type, args.ext_datas, codedata);
 			break;
 		case transactionType.RC721_CONTRACT:
@@ -307,30 +307,15 @@ export default {
 	},
 	/**
 	 * transfer normal
-	 * @param {*} from {"keypair":{"address":"","privateKey":""}, "nonce": 0}
-	 * @param {*} exdata 明文，方法里做ascii编码
-	 * @param {*} args 
-	 * 	transfer balance
-	 * 	args=[{"address":"","amount":100},{"address":"", "amount":20}]
-	 * 
-	 * 	transfer token
-	 * 	args=[
-	 * 		{"address":"","token":"AAA","tokenAmount":1000},
-	 * 		{"address":"","token":"AAA","tokenAmount":2000}
-	 *	]
-	 * 
-	 * 	transfer crypto token
-	 * 	args=[
-	 * 		{"address","symbol":"house","cryptoToken":["hash0","hash1"]},
-	 * 		{"address","symbol":"house","cryptoToken":["hash2","hash3"]}
-	 * 	]
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
 	 */
 	transfer: function (from, args) {
 		return __sendTxTransaction(from, transactionType.NORMAL, args);
 	},
 	/**
 	 * create contract
-	 * @param {*} from 
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
 	 * @param {*} args {"data":"hexstring"}
 	 */
 	createContract: function (from, exdata, args) {
@@ -346,12 +331,11 @@ export default {
 	},
 	/**
 	 * 发布token
-	 * @param {*} from 
-	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":object} 
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":"hexstring"} 
 	 */
-	publicToken: function (from, args) {
-		args.function = functionType.CONSTRUCT_PRINTABLE;
-		console.log("args:" + JSON.stringify(args));
+	createToken:function(from,args){
+		args.function=functionType.CONSTRUCT_PRINTABLE;
 		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
 	},
 	/**
@@ -359,10 +343,9 @@ export default {
 	 * @param {*} from 
 	 * @param {*} args 
 	 */
-	sign: function (from, args) {
+	sign:function(from,type, args){
 		// return __sendTxTransaction(from, transactionType.NORMAL, null, args);
-		return __sign(from, transactionType.NORMAL, args);
-
+		return __sign(from, type, args);
 	},
 	/**
 	 * 交易hash签名

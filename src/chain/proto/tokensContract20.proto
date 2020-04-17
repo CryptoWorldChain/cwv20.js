@@ -8,7 +8,6 @@ message ContractRC20 {
 	repeated  bytes	tos=3;
 	repeated  bytes	values = 4;
 	bytes   ext_datas = 6;//扩展信息
-	
 	string	name = 10;//构建函数时候使用
 	string	symbol = 11;//构建函数时候使用
 	int64	decimals = 12;//精度构建函数时候使用
