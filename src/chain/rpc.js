@@ -134,7 +134,7 @@ var __sign = function (from, type, args) {
 				contractRC20.symbol=args.symbol;
 			}
 			if(args.hasOwnProperty("decimals")){
-				contractRC20.decimals==args.decimals;
+				contractRC20.decimals=args.decimals;
 			}
 
 			if (args.tos) {
