@@ -125,7 +125,7 @@ var __sign = function (from, type, args) {
 			console.log("RC20_CONTRACT");
 			let ContractRC20 = proto.load("ContractRC20")
 			let contractRC20 = ContractRC20.create();
-			contractRC20.function=args.function;
+			contractRC20.function = args.function;
 			
 			if(args.hasOwnProperty("name")){
 				contractRC20.name=args.name;
@@ -153,7 +153,17 @@ var __sign = function (from, type, args) {
 			}
 			console.log("ContractRC20=="+JSON.stringify(contractRC20));
 			let codedata=ContractRC20.encode(contractRC20).finish();
-			opts = getTransactionOpts(from, type, args.ext_datas, codedata);
+			if (args.function == functionType.TRANSFERS) {
+				let outs = [];
+				let out = {
+					address: Buffer.from(removePrefix(args.tokenAddress), "hex"),
+					amount: new BN(0).toArrayLike(Buffer)
+				};
+				outs.push(out);
+				opts = getTransactionOpts(from, type, args.ext_datas, codedata, outs);
+			} else {
+				opts = getTransactionOpts(from, type, args.ext_datas, codedata);
+			}
 			break;
 		case transactionType.RC721_CONTRACT:
 			console.log("RC721_CONTRACT");
@@ -336,6 +346,17 @@ export default {
 	 */
 	createToken:function(from,args){
 		args.function=functionType.CONSTRUCT_PRINTABLE;
+		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
+	},
+	/**
+	 * transfer token 
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} token
+	 * @param {*} args {"tos":["",""], "values":["",""]} 
+	 */
+	transferToken: function(from, token, args) {
+		args.function=functionType.TRANSFERS;
+		args.tokenAddress = token;
 		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
 	},
 	/**
