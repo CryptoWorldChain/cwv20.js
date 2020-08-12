@@ -328,7 +328,7 @@ export default {
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
 	 * @param {*} args {"data":"hexstring"}
 	 */
-	createContract: function (from, exdata, args) {
+	createContract: function (from, args) {
 		return __sendTxTransaction(from, transactionType.CVM_CONTRACT, args);
 	},
 	/**
@@ -336,7 +336,7 @@ export default {
 	 * @param {*} from 
 	 * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
 	 */
-	callContract: function (from, exdata, args) {
+	callContract: function (from, args) {
 		return __sendTxTransaction(from, transactionType.CVM_CONTRACT, args);
 	},
 	/**
@@ -374,7 +374,7 @@ export default {
 	 * @param {*} exdata 
 	 * @param {*} args {data:"交易hash"} 
 	 */
-	signTx: function (from, exdata, args) {
+	signTx: function (from, args) {
 		var d = new Date().getTime();
 		var buf = new BN(d).toArrayLike(Buffer, d, 32);
 		console.log(buf.toString('hex'))
