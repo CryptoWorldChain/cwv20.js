@@ -105,7 +105,7 @@ var validOpts = function (opts) {
  * evfs fileupload
  * args={}
 */
-var __sign = function (from, type, args) {
+var __sign = function (from, type, exdata,args) {
 	//发送交易
 	if (!from) {
 		return new Promise((resolve, reject) => {
@@ -160,9 +160,9 @@ var __sign = function (from, type, args) {
 					amount: new BN(0).toArrayLike(Buffer)
 				};
 				outs.push(out);
-				opts = getTransactionOpts(from, type, args.ext_datas, codedata, outs);
+				opts = getTransactionOpts(from, type, exdata, codedata, outs);
 			} else {
-				opts = getTransactionOpts(from, type, args.ext_datas, codedata);
+				opts = getTransactionOpts(from, type, exdata, codedata);
 			}
 			break;
 		case transactionType.RC721_CONTRACT:
@@ -188,15 +188,15 @@ var __sign = function (from, type, args) {
 					};
 					outs.push(out);
 					let codedata = Buffer.from(args.data, "hex")
-					opts = getTransactionOpts(from, type, null, codedata, outs);
+					opts = getTransactionOpts(from, type, exdata, codedata, outs);
 				} else {
-					opts = getTransactionOpts(from, type, null, codedata);
+					opts = getTransactionOpts(from, type, exdata, codedata);
 				}
 			}
 			break;
 		default:
 			let outs = generateOutputs(args);
-			opts = getTransactionOpts(from, type, null, null, outs);
+			opts = getTransactionOpts(from, type, exdata, null, outs);
 			break;
 	}
 	return new TransactionInfo(opts).genBody();
@@ -318,35 +318,39 @@ export default {
 	/**
 	 * transfer normal
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
 	 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
 	 */
-	transfer: function (from, args) {
-		return __sendTxTransaction(from, transactionType.NORMAL, args);
+	transfer: function (from, exdata,args) {
+		return __sendTxTransaction(from, transactionType.NORMAL,exdata, args);
 	},
 	/**
 	 * create contract
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
 	 * @param {*} args {"data":"hexstring"}
 	 */
-	createContract: function (from, args) {
-		return __sendTxTransaction(from, transactionType.CVM_CONTRACT, args);
+	createContract: function (from,exdata, args) {
+		return __sendTxTransaction(from, transactionType.CVM_CONTRACT,exdata, args);
 	},
 	/**
 	 * call contract
 	 * @param {*} from 
+	 * @param {*} exdata
 	 * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
 	 */
-	callContract: function (from, args) {
-		return __sendTxTransaction(from, transactionType.CVM_CONTRACT, args);
+	callContract: function (from,exdata, args) {
+		return __sendTxTransaction(from, transactionType.CVM_CONTRACT,exdata, args);
 	},
 	/**
 	 * 发布token
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
 	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":"hexstring"} 
 	 */
-	createToken:function(from,args){
+	createToken:function(from,exdata,args){
 		args.function=functionType.CONSTRUCT_PRINTABLE;
-		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
+		return __sendTxTransaction(from, transactionType.RC20_CONTRACT,exdata, args);
 	},
 	/**
 	 * transfer token 
@@ -357,7 +361,7 @@ export default {
 	transferToken: function(from, token, args) {
 		args.function=functionType.TRANSFERS;
 		args.tokenAddress = token;
-		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, args);
+		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, null,args);
 	},
 	/**
 	 * sign

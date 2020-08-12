@@ -104,12 +104,14 @@ var kp = brew.KeyPair.genFromPrikey(
 /**
 * transfer
 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} exdata 
 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
 */
 kp.nonce=10;
 var from={keypair:kp};
 var args=[{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":1}]
-brew.rpc.transfer(from,args).then(function(result){
+var exdata=""
+brew.rpc.transfer(from,extdata,args).then(function(result){
     console.log(result)
 }).catch(function(error){
     console.log(error);
@@ -121,9 +123,10 @@ Create a token transaction
 /**
 * create token
 * @param {*} from {"keypair":{"address":"","privateKey":"", "nonce": 0}}
+* @param {*} exdata
 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18,"ext_datas":"hexstring"}
 */
-brew.rpc.createToken(from, args).then(function(result){
+brew.rpc.createToken(from,exdata args).then(function(result){
     console.log(result)
 }).catch(function(error){
     console.log(error);
@@ -136,9 +139,10 @@ Create contract
 /**
 * create contract
 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} exdata
 * @param {*} args {"data":"hexstring"}
 */
-brew.rpc.createContract(from,args).then(function(result){
+brew.rpc.createContract(from,exdata,args).then(function(result){
     console.log(result)
 }).catch(function(error){
     console.log(error);
