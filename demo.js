@@ -1,6 +1,8 @@
 const chain=require('./dist/brewchain.js');
 const fs=require('fs');
 var rp = require('request-promise')
+
+var BN=require('bn.js');
 //set testnet network type
 chain.config.server_base='http://43.254.1.176:8000/fbs';
 chain.config.rpc_provider = rp;
@@ -11,26 +13,25 @@ chain.config.rpc_provider = rp;
 // ee155386bf40a7d55f0bef92743adc0c8fb0683c  565ab31d16d4b8bc408ab5ce84ef265f58f337c20386f3dfdc7eb6fe9aad5280
 // 97f1bd5e9cae1d7f52bbb2818d80c8ca9392215b  ac289f69fad7a5a86b90e1518877d9919d1ee2ff84a4210d5e081823e7ceb9ba
 
-var kp = chain.KeyPair.genFromPrikey('79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51')
-// var kp = cwv.KeyPair.genFromPrikey('6b5e7ff06889bd3acea83d81a79eccef5cc0c02d2085fe70d07f6257fc3d0eec')
-// var kp=cwv.KeyPair.genRandomKey();
-// var kp = cwv.KeyPair.genFromPrikey('fa626690bf525b4652e03be9a8bea4d807c4ae56102904b06fd8ed19b2e7138e')
+// 测试链默认有钱的 3c1ea4aa4974d92e0eabd5d024772af3762720a0  79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51
 
+var kp = chain.KeyPair.genFromPrikey('79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51')
 var from={
     keypair:kp
 }
 
-
 console.log(from)
 
 chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
-    result=JSON.parse(result);
-
-    // var args=[{"address":"a5c31be225011ee6ecceaf3b9b3696db01a20d6c","amount":"0"}]
+    // ************************1.transfer************************
+    // result=JSON.parse(result);
+    // from.keypair.nonce=result.nonce;
+    // var args=[{"address":"97f1bd5e9cae1d7f52bbb2818d80c8ca9392215b","amount":"-1000000000000000000"}]
     // chain.rpc.transfer(from,args).then(function(result){
     //     console.log(result)
     // })
 
+    // ************************2.createContract************************
     // var cvm = "608060405234801561001057600080fd5b506103bb806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063549262ba14610051578063b6588ffd14610068575b600080fd5b34801561005d57600080fd5b5061006661007f565b005b34801561007457600080fd5b5061007d6101a5565b005b60016040519080825280601f01601f1916602001820160405280156100b35781602001602082028038833980820191505090505b50600090805190602001906100c992919061021b565b5060017f010000000000000000000000000000000000000000000000000000000000000002600080815460018160011615610100020316600290048110151561010e57fe5b81546001161561012d5790600052602060002090602091828204019190065b601f036101000a81548160ff021916907f01000000000000000000000000000000000000000000000000000000000000008404021790555060018081905550600060026000600154815260200190815260200160002090805460018160011615610100020316600290046101a292919061029b565b50565b60006040519080825280601f01601f1916602001820160405280156101d95781602001602082028038833980820191505090505b50600090805190602001906101ef92919061021b565b50600060018190555060026000600154815260200190815260200160002060006102199190610322565b565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061025c57805160ff191683800117855561028a565b8280016001018555821561028a579182015b8281111561028957825182559160200191906001019061026e565b5b509050610297919061036a565b5090565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106102d45780548555610311565b8280016001018555821561031157600052602060002091601f016020900482015b828111156103105782548255916001019190600101906102f5565b5b50905061031e919061036a565b5090565b50805460018160011615610100020316600290046000825580601f106103485750610367565b601f016020900490600052602060002090810190610366919061036a565b5b50565b61038c91905b80821115610388576000816000905550600101610370565b5090565b905600a165627a7a723058205fd1e9e6ca31a58972c0187a28d79f542e594dd42f5415a794289b07b66ad97d0029";
     // args={"data":cvm};
     // chain.rpc.createContract(from,args).then(function(result){
@@ -38,13 +39,15 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
     // }).catch(function(error){
     //     console.log("error==="+error);
     // })
-    from.keypair.nonce=result.nonce;
-    args={"tos":["a5c31be225011ee6ecceaf3b9b3696db01a20d6c"], "values":["0"],"name":"AAA","symbol":"AAA","decimals":18,"ext_datas":Buffer.from(JSON.stringify({"c":"2"}),"utf8").toString("hex")} 
-    chain.rpc.publicToken(from,args).then(function(result){
-        console.log(result);
-    }).catch(function(error){
-        console.log("error==="+error);
-    })
+
+    // ************************2.createToken************************
+    // from.keypair.nonce=result.nonce;
+    // args={"tos":["a5c31be225011ee6ecceaf3b9b3696db01a20d6c"], "values":["0"],"name":"AAA","symbol":"AAA","decimals":18,"ext_datas":Buffer.from(JSON.stringify({"c":"2"}),"utf8").toString("hex")} 
+    // chain.rpc.createToken(from,args).then(function(result){
+    //     console.log(result);
+    // }).catch(function(error){
+    //     console.log("error==="+error);
+    // })
 
 }).catch(function (err) {
     console.log(err)
@@ -52,11 +55,10 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
 
 // console.log(chain.rpc.sign(from,args))
 
+// ************************3.getTransaction************************
 // chain.rpc.getTransaction('c5a807a17a9c85d8d1895aa92bf94ba35ceb8b80a039110804531e06bfcfbe34a6').then(function(result){
 //     console.log(result)
 // })
-
-
 
 // String hexStr = "706172616d6574657220696e76616c69642c2073656e646572206e6f6e6365206973206c61726765207468616e207472616e73616374696f6e206e6f6e6365";
 //   byte[] bytes = crypto.hexStrToBytes(hexStr);
@@ -65,7 +67,9 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
 
 
 var hex='706172616d6574657220696e76616c69642c2073656e646572206e6f6e6365206973206c61726765207468616e207472616e73616374696f6e206e6f6e6365';
-hex='e90842a702ccea19f502a6ec02b3e0254c4bb8f0c0994c4a13a3da0d1f9761e22c';
+// 0x33b2e3c9fd0803ce7fffe00
+// 0x33b2e3c9fd0803ce7fffe00
+// 0x33b2e3c840f12d59937fe00
 // 16进制转字符串
 function hex2str(hex) {
 　　var trimedStr = hex.trim();
@@ -83,8 +87,7 @@ function hex2str(hex) {
 　　}
 　　return resultStr.join("");
 }
-// console.log(hex2str(hex));
-// console.log(Buffer.from('10',"utf8"))
-// console.log(new BN("10").toArrayLike(Buffer))
-// const buffer=Buffer.from("a5c31be225011ee6ecceaf3b9b3696db01a20d6c","hex") 
-//    console.log(buffer)
+// console.log(hex2str(hex))
+
+
+console.log(BigInt('0x33b2e3c9fd0803ce7fffe00'))
