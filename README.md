@@ -19,7 +19,7 @@ brew.config.net_type='prodnet'
 brew.config.rpc_provider = rp;
 ```
 
-Create keystore.json、keypair
+Create keystore.json、keypair
 ```java
 const brew=require('brewchain.js');
 const fs=require('fs');
