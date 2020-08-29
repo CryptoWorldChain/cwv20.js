@@ -104,7 +104,7 @@ var kp = brew.KeyPair.genFromPrikey(
 /**
 * transfer
 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
-* @param {*} exdata 
+* @param {*} exdata "hexstring"
 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
 */
 kp.nonce=10;
@@ -123,10 +123,25 @@ Create a token transaction
 /**
 * create token
 * @param {*} from {"keypair":{"address":"","privateKey":"", "nonce": 0}}
-* @param {*} exdata
-* @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18,"ext_datas":"hexstring"}
+* @param {*} exdata "hexstring"
+* @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18}
 */
 brew.rpc.createToken(from,exdata args).then(function(result){
+    console.log(result)
+}).catch(function(error){
+    console.log(error);
+})
+```
+
+Transfer token transaction
+```js
+/**
+ * transfer token 
+ * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} token
+ * @param {*} args {"tos":["",""], "values":["",""]} 
+ */
+brew.rpc.transferToken(from,token,args).then(function(result){
     console.log(result)
 }).catch(function(error){
     console.log(error);
@@ -139,7 +154,7 @@ Create contract
 /**
 * create contract
 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
-* @param {*} exdata
+* @param {*} exdata "hexstring"
 * @param {*} args {"data":"hexstring"}
 */
 brew.rpc.createContract(from,exdata,args).then(function(result){
@@ -149,6 +164,21 @@ brew.rpc.createContract(from,exdata,args).then(function(result){
 })
 ```
 
+Call contract
+```js
+/**
+ * call contract
+ * @param {*} from 
+ * @param {*} exdata
+ * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
+*/
+
+brew.rpc.callContract(from,exdata,args).then(function(result){
+    console.log(result)
+}).catch(function(error){
+    console.log(error);
+})
+```
 ### License
 
 MIT

@@ -169,9 +169,9 @@ var __sign = function (from, type, exdata,args) {
 			console.log("RC721_CONTRACT");
 			break;
 		case transactionType.CVM_CONTRACT:
+
 			if (!args || !args.data) {
-				// reject("缺少参数data");
-				console.error("缺少参数data");
+				reject("缺少参数data")
 			} else {
 				// let CVMContract = proto.load("CVMContract");
 				// let cvmContract = CVMContract.create();
@@ -187,7 +187,6 @@ var __sign = function (from, type, exdata,args) {
 						amount: new BN(0).toArrayLike(Buffer)
 					};
 					outs.push(out);
-					let codedata = Buffer.from(args.data, "hex")
 					opts = getTransactionOpts(from, type, exdata, codedata, outs);
 				} else {
 					opts = getTransactionOpts(from, type, exdata, codedata);
@@ -201,8 +200,8 @@ var __sign = function (from, type, exdata,args) {
 	}
 	return new TransactionInfo(opts).genBody();
 }
-var __sendTxTransaction = function (from, type, args) {
-	let result = __sign(from, type, args);
+var __sendTxTransaction = function (from, type,extdata, args) {
+	let result = __sign(from, type,extdata, args);
 	return sendRawTransaction.request(result);
 };
 
@@ -346,7 +345,7 @@ export default {
 	 * 发布token
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
 	 * @param {*} exdata
-	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12,"ext_datas":"hexstring"} 
+	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12} 
 	 */
 	createToken:function(from,exdata,args){
 		args.function=functionType.CONSTRUCT_PRINTABLE;
@@ -358,7 +357,7 @@ export default {
 	 * @param {*} token
 	 * @param {*} args {"tos":["",""], "values":["",""]} 
 	 */
-	transferToken: function(from, token, args) {
+	transferToken: function(from,token, args) {
 		args.function=functionType.TRANSFERS;
 		args.tokenAddress = token;
 		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, null,args);
