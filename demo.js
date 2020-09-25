@@ -15,7 +15,7 @@ chain.config.rpc_provider = rp;
 
 // 测试链默认有钱的 3c1ea4aa4974d92e0eabd5d024772af3762720a0  79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51
 
-var kp = chain.KeyPair.genFromPrikey('ac289f69fad7a5a86b90e1518877d9919d1ee2ff84a4210d5e081823e7ceb9ba')
+var kp = chain.KeyPair.genFromPrikey('3f1caff94cc871ae796c61ddbf360e0bd515eb26047215634e7386e4a1ea0ab8')
 // var kp=chain.KeyPair.genRandomKey()
 var from={
     keypair:kp
@@ -27,20 +27,19 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
     // ************************1.transfer************************
     result=JSON.parse(result);
     from.keypair.nonce=result.nonce;
-    // var args=[{"address":"6e1a9a64f3bd915270d1a12b1f448b8f4dd36071","amount":"1000000000000000000000000"},
-    // {"address":"ee155386bf40a7d55f0bef92743adc0c8fb0683c","amount":"1000000000000000000000000"}]
+    // var args=[{"address":"46f1f188bca9c555464ab41daecffaa0405f177c","amount":"10000000000000000000000"}]
     // chain.rpc.transfer(from,null,args).then(function(result){
     //     console.log(result)
     // })
     // console.log(from)
     // ************************2.createContract************************
-    var cvm = "608060405234801561001057600080fd5b5060df8061001f6000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636057361d14604e578063b05784b8146078575b600080fd5b348015605957600080fd5b5060766004803603810190808035906020019092919050505060a0565b005b348015608357600080fd5b50608a60aa565b6040518082815260200191505060405180910390f35b8060008190555050565b600080549050905600a165627a7a72305820932e47aec0222dc95d62713ff319c47ef736ebffa72eadb17185eadfd6adaa180029";
-    args={"data":cvm};
-    chain.rpc.createContract(from,null,args).then(function(result){
-        console.log("cvm:"+result)
-    }).catch(function(error){
-        console.log("error==="+error);
-    })
+    // var cvm = "608060405234801561001057600080fd5b5060df8061001f6000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680636057361d14604e578063b05784b8146078575b600080fd5b348015605957600080fd5b5060766004803603810190808035906020019092919050505060a0565b005b348015608357600080fd5b50608a60aa565b6040518082815260200191505060405180910390f35b8060008190555050565b600080549050905600a165627a7a72305820932e47aec0222dc95d62713ff319c47ef736ebffa72eadb17185eadfd6adaa180029";
+    // args={"data":cvm};
+    // chain.rpc.createContract(from,null,args).then(function(result){
+    //     console.log("cvm:"+result)
+    // }).catch(function(error){
+    //     console.log("error==="+error);
+    // })
 
     // args={"contract":"0x1c81566438e4f089f893557379ba9332450beb3d","data":"6057361d0000000000000000000000000000000000000000000000000000000000002710"}
     // chain.rpc.callContract(from,null,args).then(function(result){
@@ -104,3 +103,4 @@ function hex2str(hex) {
 }
 console.log(hex2str(hex))
 
+console.log(BigInt("0x21e19e0c9bab2400000"))

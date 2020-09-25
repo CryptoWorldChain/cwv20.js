@@ -118,6 +118,19 @@ brew.rpc.transfer(from,extdata,args).then(function(result){
 })
 ```
 
+sign transfer
+```js
+/**
+ * sign transfer 
+ * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} token
+ * @param {*} args {"tos":["",""], "values":["",""]} 
+ * @result {"tx":tx}
+ */
+//only get sign
+var sign = brew.rpc.signTransfer(from,extdata,args);
+```
+
 Create a token transaction
 ```js
 /**
@@ -133,6 +146,19 @@ brew.rpc.createToken(from,exdata args).then(function(result){
 })
 ```
 
+sign create token
+```js
+/**
+* create token
+* @param {*} from {"keypair":{"address":"","privateKey":"", "nonce": 0}}
+* @param {*} exdata "hexstring"
+* @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18} 
+* @result {"tx":tx}
+*/
+//only get sign
+var sign = brew.rpc.signCreateToken(from,extdata,args);
+```
+
 Transfer token transaction
 ```js
 /**
@@ -146,6 +172,18 @@ brew.rpc.transferToken(from,token,args).then(function(result){
 }).catch(function(error){
     console.log(error);
 })
+```
+
+sign transfer token
+```js
+/**
+ * transfer token 
+ * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} token
+ * @param {*} args {"tos":["",""], "values":["",""]} 
+ * @result {"tx":tx}
+ */
+var sign = brew.rpc.signTransferToken(from,extdata,args);
 ```
 
 Create contract
@@ -164,6 +202,18 @@ brew.rpc.createContract(from,exdata,args).then(function(result){
 })
 ```
 
+sign Create contract
+```js
+/**
+* create contract
+* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} exdata "hexstring"
+* @param {*} args {"data":"hexstring"}
+* @result {"tx":tx}
+*/
+var sign = brew.rpc.signCreateContract(from,extdata,args);
+```
+
 Call contract
 ```js
 /**
@@ -178,6 +228,18 @@ brew.rpc.callContract(from,exdata,args).then(function(result){
 }).catch(function(error){
     console.log(error);
 })
+```
+
+sign Call contract
+```js
+/**
+ * call contract
+ * @param {*} from 
+ * @param {*} exdata
+ * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
+ * @result {"tx":tx}
+*/
+var sign = brew.rpc.signCallContract(from,extdata,args);
 ```
 ### License
 

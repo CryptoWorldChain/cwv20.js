@@ -324,6 +324,15 @@ export default {
 		return __sendTxTransaction(from, transactionType.NORMAL,exdata, args);
 	},
 	/**
+	 * sign transfer normal
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
+	 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
+	 */
+	signTransfer: function (from, exdata,args) {
+		return __sign(from, transactionType.NORMAL,exdata, args);
+	},
+	/**
 	 * create contract
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
 	 * @param {*} exdata
@@ -333,6 +342,15 @@ export default {
 		return __sendTxTransaction(from, transactionType.CVM_CONTRACT,exdata, args);
 	},
 	/**
+	 * sign create contract
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
+	 * @param {*} args {"data":"hexstring"}
+	 */
+	signCreateContract: function (from,exdata, args) {
+		return __sign(from, transactionType.CVM_CONTRACT,exdata, args);
+	},
+	/**
 	 * call contract
 	 * @param {*} from 
 	 * @param {*} exdata
@@ -340,6 +358,15 @@ export default {
 	 */
 	callContract: function (from,exdata, args) {
 		return __sendTxTransaction(from, transactionType.CVM_CONTRACT,exdata, args);
+	},
+	/**
+	 * sign call contract
+	 * @param {*} from 
+	 * @param {*} exdata
+	 * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
+	 */
+	signCallContract: function (from,exdata, args) {
+		return __sign(from, transactionType.CVM_CONTRACT,exdata, args);
 	},
 	/**
 	 * 发布token
@@ -352,6 +379,16 @@ export default {
 		return __sendTxTransaction(from, transactionType.RC20_CONTRACT,exdata, args);
 	},
 	/**
+	 * sign 发布token
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} exdata
+	 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":12} 
+	 */
+	signCreateToken:function(from,exdata,args){
+		args.function=functionType.CONSTRUCT_PRINTABLE;
+		return __sign(from, transactionType.RC20_CONTRACT,exdata, args);
+	},
+	/**
 	 * transfer token 
 	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
 	 * @param {*} token
@@ -361,6 +398,17 @@ export default {
 		args.function=functionType.TRANSFERS;
 		args.tokenAddress = token;
 		return __sendTxTransaction(from, transactionType.RC20_CONTRACT, null,args);
+	},
+	/**
+	 * sign transfer token 
+	 * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+	 * @param {*} token
+	 * @param {*} args {"tos":["",""], "values":["",""]} 
+	 */
+	signTransferToken: function(from,token, args) {
+		args.function=functionType.TRANSFERS;
+		args.tokenAddress = token;
+		return __sign(from, transactionType.RC20_CONTRACT, null,args);
 	},
 	/**
 	 * sign
