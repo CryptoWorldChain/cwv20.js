@@ -43,6 +43,10 @@ export default class KeyPair {
 		return KeyPair.genFromECCKey(key);
 	}
 
+	static genCVNFromPrikey(hexPrikey){
+		return "cvn".concat(KeyPair.genFromPrikey(hexPrikey));
+	}
+
 	static genFromPubkey(hexPubkey){ 
 		var x = Buffer.from(new Uint8Array(new Buffer(hexPubkey.slice(0,64),'hex')).reverse());
 		console.log("x=="+x.toString('hex'));
@@ -51,6 +55,11 @@ export default class KeyPair {
 		var key = new ecc.ec('secp256r1').keyFromPublic({x:x,y:y});
 		return KeyPair.genFromECCKey(key);
 	}
+
+	static genCVNFromPubkey(hexPubkey){
+		return "cvn".concat(KeyPair.genFromPubkey(hexPubkey));
+	}
+
 	static genFromECCKey(key){
 		var hexPrikey = key.getPrivate()?reverts(key.getPrivate().toString(16)): NaN;
 		var hexPubkey = new Buffer(key.getPublic().getX().clone().toArray().reverse()).toString('hex').slice(0,64)

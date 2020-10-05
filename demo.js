@@ -4,7 +4,7 @@ var rp = require('request-promise')
 
 var BN=require('bn.js');
 //set testnet network type
-chain.config.server_base='http://c0:8000/fbs';
+chain.config.server_base ='http://c0:8000/fbs';
 chain.config.rpc_provider = rp;
 
 // 3c1ea4aa4974d92e0eabd5d024772af3762720a0  79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51
@@ -102,5 +102,12 @@ function hex2str(hex) {
 　　return resultStr.join("");
 }
 console.log(hex2str(hex))
-
-console.log(BigInt("0x21e19e0c9bab2400000"))
+hex = "0x21e19e0c9bab24000ff";
+function hexToString(hex,precision){
+    if (hex.indexOf("0x")>-1){
+        return ((BigInt(hex))/BigInt(10 **(18-precision))).toString()
+    }else{
+        return (BigInt("0x".concat(hex))/BigInt(10 **(18-precision))).toString()
+    }
+}
+console.log(hexToString(hex,2).toString())

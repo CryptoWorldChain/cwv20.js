@@ -41,6 +41,13 @@ const brew=require('brewchain.js');
 /**
 * get balance and nonce
 * @param {*} address
+* @result {
+        "retCode": 1,
+        "address": "0x46f1f188bca9c555464ab41daecffaa0405f177c",
+        "nonce": 0,//nonce
+        "balance": "0x21e19e0c9bab2400000",//16进制余额
+        "status": 0
+    } 
 */
 brew.rpc.getBalance('8f3aa4f0f35ff81ba487f91f6b980c0ba2562245').then(function(result){
     console.log(result.account.balance)
@@ -103,9 +110,14 @@ var kp = brew.KeyPair.genFromPrikey(
   
 /**
 * transfer
-* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
 * @param {*} exdata "hexstring"
 * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
+* @result {*}
+ *  {
+ *      "retCode": 1, //1=成功 0=失败
+ *      "hash": "70d994369495f2139102a8391e463418d0f6d62e4a2e1444949f3eba2e1ebf74b7"//交易hash
+ *  }
 */
 kp.nonce=10;
 var from={keypair:kp};
@@ -122,7 +134,7 @@ sign transfer
 ```js
 /**
  * sign transfer 
- * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
  * @param {*} token
  * @param {*} args {"tos":["",""], "values":["",""]} 
  * @result {"tx":tx}
@@ -135,9 +147,14 @@ Create a token transaction
 ```js
 /**
 * create token
-* @param {*} from {"keypair":{"address":"","privateKey":"", "nonce": 0}}
+* @param {*} from {"keypair":{"hexAddress":"","privateKey":"", "nonce": 0}}
 * @param {*} exdata "hexstring"
 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18}
+* @result {*}
+ *  {
+ *      "retCode": 1, //1=成功 0=失败
+ *      "hash": "70d994369495f2139102a8391e463418d0f6d62e4a2e1444949f3eba2e1ebf74b7"//交易hash
+ *  }
 */
 brew.rpc.createToken(from,exdata args).then(function(result){
     console.log(result)
@@ -150,7 +167,7 @@ sign create token
 ```js
 /**
 * create token
-* @param {*} from {"keypair":{"address":"","privateKey":"", "nonce": 0}}
+* @param {*} from {"keypair":{"hexAddress":"","privateKey":"", "nonce": 0}}
 * @param {*} exdata "hexstring"
 * @param {*} args {"tos":["",""], "values":["",""],"name":"","symbol":"","decimals":18} 
 * @result {"tx":tx}
@@ -163,9 +180,14 @@ Transfer token transaction
 ```js
 /**
  * transfer token 
- * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
  * @param {*} token
  * @param {*} args {"tos":["",""], "values":["",""]} 
+ * @result {*}
+ *  {
+ *      "retCode": 1, //1=成功 0=失败
+ *      "hash": "70d994369495f2139102a8391e463418d0f6d62e4a2e1444949f3eba2e1ebf74b7"//交易hash
+ *  }
  */
 brew.rpc.transferToken(from,token,args).then(function(result){
     console.log(result)
@@ -178,7 +200,7 @@ sign transfer token
 ```js
 /**
  * transfer token 
- * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
  * @param {*} token
  * @param {*} args {"tos":["",""], "values":["",""]} 
  * @result {"tx":tx}
@@ -191,9 +213,15 @@ Create contract
 ```js
 /**
 * create contract
-* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
 * @param {*} exdata "hexstring"
 * @param {*} args {"data":"hexstring"}
+* @result {*} 
+ *  {
+ *      "retCode": 1, //1=成功 0=失败
+ *      "hash": "70d994369495f2139102a8391e463418d0f6d62e4a2e1444949f3eba2e1ebf74b7"//交易hash
+ *      "contractHash":""//合约地址 ,其他交易无此参数
+ *  }
 */
 brew.rpc.createContract(from,exdata,args).then(function(result){
     console.log(result)
@@ -206,7 +234,7 @@ sign Create contract
 ```js
 /**
 * create contract
-* @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+* @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
 * @param {*} exdata "hexstring"
 * @param {*} args {"data":"hexstring"}
 * @result {"tx":tx}
@@ -221,6 +249,11 @@ Call contract
  * @param {*} from 
  * @param {*} exdata
  * @param {*} args {"contract":"", "data":"hexstring", "amount":""}
+ * @result {*}
+ *  {
+ *      "retCode": 1, //1=成功 0=失败
+ *      "hash": "70d994369495f2139102a8391e463418d0f6d62e4a2e1444949f3eba2e1ebf74b7"//交易hash
+ *  }
 */
 
 brew.rpc.callContract(from,exdata,args).then(function(result){

@@ -17,5 +17,5 @@ export default {
    	utils:utils,
    	config:config,
    	Buffer:Buffer,
-   	rpc:rpc
+	rpc:rpc 
 };

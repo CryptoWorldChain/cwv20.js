@@ -4,17 +4,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 
 const path = require('path');
-// console.log("path=="+path+"===>"+path.resolve(__dirname, "keystore"))
 module.exports = {
 	mode: "production",
-  	entry: './src/index.js',
+  	entry: './src/browser.js',
 	optimization: {
 	    //minimizer: [
 	    //  new TerserPlugin({ /* your config */ })
 	    // ]
 	},
-	devtool: 'inline-source-map',
-
 	devServer: {
 	    contentBase: path.join(__dirname, 'dist'),
 	    compress: true,
@@ -43,7 +40,7 @@ module.exports = {
 	       	loader: 'raw-loader',
 	       	include:[path.resolve(__dirname, "src/chain/proto")],
 	      },
-	      
+
 	    ],
 	 },
 	resolve: {//import的时候不需要加上js
@@ -53,11 +50,12 @@ module.exports = {
    		 }
   	},
   	output: {
-    	filename: 'brewchain.js',
+    	filename: 'brewchain-browser.js',
     	path: path.resolve(__dirname, 'dist'),
-    	library:'brewchain',
-    	libraryTarget:'commonjs2',
-    	libraryExport:'default'
+    	library:'chain',
+
+    	// libraryTarget:'commonjs2',
+    	// libraryExport:'default'
   	},
   	node: {
 		    console: 'mock',
@@ -65,7 +63,7 @@ module.exports = {
 		    net: 'empty',
 		    tls: 'empty'
 		},
-	
+
 
   	plugins: [new HtmlWebpackPlugin(),
 

@@ -38,7 +38,6 @@ export default class TransactionInfo extends Transaction {
 		let TransactionBody = proto.load('TransactionBody');
 		var txbody = NaN;
 		let keypair = this.args.keypair;
-
 		// let timestamp = new Date().getTime();
         txbody = TransactionBody.create();
 
