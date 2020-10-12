@@ -43,6 +43,12 @@ export default class KeyPair {
 		return KeyPair.genFromECCKey(key);
 	}
 
+	static genCVNFromPrikey(hexPrikey){
+		var kp=KeyPair.genFromPrikey(hexPrikey);
+		kp.hexAddress="CVN".concat(kp.hexAddress);
+		return kp;
+	}
+
 	static genFromPubkey(hexPubkey){ 
 		var x = Buffer.from(new Uint8Array(new Buffer(hexPubkey.slice(0,64),'hex')).reverse());
 		console.log("x=="+x.toString('hex'));
@@ -50,6 +56,12 @@ export default class KeyPair {
 		console.log("y=="+y.toString('hex'));
 		var key = new ecc.ec('secp256r1').keyFromPublic({x:x,y:y});
 		return KeyPair.genFromECCKey(key);
+	}
+
+	static genCVNFromPubkey(hexPubkey){
+		var kp=KeyPair.genFromPubkey(hexPrikey);
+		kp.hexAddress="CVN".concat(kp.hexAddress);
+		return kp;
 	}
 
 	static genFromECCKey(key){
@@ -67,6 +79,11 @@ export default class KeyPair {
 	static genRandomKey(options){
 		var key = new ecc.ec('secp256r1').genKeyPair(options);
 		return KeyPair.genFromECCKey(key);
+	}
+	static genCVNRandomKey(options){
+		var kp=KeyPair.genRandomKey(options);
+		kp.hexAddress="CVN".concat(kp.hexAddress);
+		return kp;
 	}
 	//数据签名
 	ecHexSign(hexMsg){

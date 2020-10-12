@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path');
 // console.log("path=="+path+"===>"+path.resolve(__dirname, "keystore"))
 module.exports = {
-	mode: "production",
+	mode: "development",
   	entry: './src/index.js',
 	optimization: {
 	    //minimizer: [

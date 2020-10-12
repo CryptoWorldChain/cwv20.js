@@ -273,7 +273,15 @@ var removePrefix = function (addr) {
 		return addr;
 	}
 }
+
 export default {
+	removeCVN:function(addr){
+		if (addr.startsWith('CVN') || addr.startsWith('cvn')) {
+			return addr.substring(3);
+		} else {
+			return addr;
+		}
+	},
 	/**
 	 * 获取balance
 	 * @param {*} args 0x59514f8d87c964520fcaf515d300e3f704bf6fcb
