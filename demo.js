@@ -5,16 +5,17 @@ var rp = require('request-promise')
 var BN=require('bn.js');
 var web3 = require('web3');
 //set testnet network type
-chain.config.server_base ='http://c0:8000/fbs';
+// chain.config.server_base ='http://jf:8000/fbs';
+chain.config.server_base ='http://jf:58333/fbs';
 chain.config.rpc_provider = rp;
-hex='0x6c0469ed6a43efa40000';
+hex='0xde0b6b3a7640000';
 //0x1faa5eb88494e8bb48000000
 var num=hex;
         if (hex.startsWith('0x')) {
             num=hex.substring(2);
         }
         var a=new BN(num,16);
-        console.log(a.toString(10));
+        // console.log(a.toString(10));
 // 3c1ea4aa4974d92e0eabd5d024772af3762720a0  79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51
 // 533a5a084cd587c86c20a0ddfb28f9ad018f341a  84a8d84288b9db81083004b0cf70ac02e696760207d689d9a4e1a773ebf80264
 // c60042d114c2a1ba13e154f446badf8e152a923f  3f1caff94cc871ae796c61ddbf360e0bd515eb26047215634e7386e4a1ea0ab8
@@ -23,8 +24,10 @@ var num=hex;
 
 // 测试链默认有钱的 3c1ea4aa4974d92e0eabd5d024772af3762720a0  79211e47216f5c13c85650fac839078ad6ae2dc074ca4bd1e7817fbdfe8f6e51
 
-// var kp = chain.KeyPair.genCVNFromPrikey('37b6e8f91e433219b3e10e2975a4e1b5fc9770d7a4e1b5fc9770d7')
-var kp=chain.KeyPair.genCVNRandomKey();
+// var kp = chain.KeyPair.genCVNFromPrikey('ee353e42dab6de236e0071257bddeb1402dbf56de5d003ef2c08fc976f016380')
+var kp = chain.KeyPair.genCVNFromPrikey('0375ea2f22fba13b203babdcc3f6cbfeeee25e5f38c86c668d568c04052dcf9b')
+
+// var kp=chain.KeyPair.genCVNRandomKey();
 
 // var kp=chain.KeyPair.genRandomKey()
 kp.hexAddress=chain.rpc.removeCVN(kp.hexAddress);
@@ -39,10 +42,10 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
     result=JSON.parse(result);
     from.keypair.nonce=result.nonce;
     var args=[
-        {"address":chain.rpc.removeCVN("CVN85b3affceb8462a38296e9eff05acbb80260070c"),
-        "amount":"10000000000000000000000"}
-        // {"address":chain.rpc.removeCVN("CVN1fd525a8de1005e01936c9d0a4df7c81208a980c"),
-        // "amount":"10000000000000000000000"},
+        {"address":chain.rpc.removeCVN("f61c5add710ec23334db494fdb51367d888352fd"),
+        "amount":"100000000000000000000000"},
+        {"address":chain.rpc.removeCVN("5d9cdda85093d68c28573ae9875eb32dbad6f0e0"),
+        "amount":"100000000000000000000000"}
         // {"address":chain.rpc.removeCVN("CVN67e86d2f6c7084b99f0d305694d5259ee9e81973"),
         // "amount":"10000000000000000000000"},
     ]
@@ -67,21 +70,21 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
     // })
     // ************************2.createToken************************
     // from.keypair.nonce=result.nonce;
-    // args={"tos":["a5c31be225011ee6ecceaf3b9b3696db01a20d6c",'97f1bd5e9cae1d7f52bbb2818d80c8ca9392215b'], 
-    // "values":["100000000000000000000","200000000000000000000"],"name":"CCC","symbol":"CCC","decimals":18,
+    // args={"tos":["5d9cdda85093d68c28573ae9875eb32dbad6f0e0",'3d4fb132d1dc29ec97ec3196b42f2ff6570d071d'], 
+    // "values":["10000000000000000000000000","10000000000000000000000000"],"name":"GC","symbol":"GC","decimals":18,
     // "ext_datas":Buffer.from(JSON.stringify({"c":"2"}),"utf8").toString("hex")} 
     // chain.rpc.createToken(from,null,args).then(function(result){
     //     console.log(result);
     // }).catch(function(error){
     //     console.log("error==="+error);
     // })
-    // token="0x77fcd28a595cc528e9f8293e79a01c2dee7e20ab";
-    // args={"tos":["3c1ea4aa4974d92e0eabd5d024772af3762720a0"], "values":["1000000000000000000"]} 
-    // chain.rpc.transferToken(from,token,args).then(function(result){
-    //     console.log(result)
-    // }).catch(function(error){
-    //     console.log(error);
-    // })
+    token="0xe41f28527d533a20534717300e7c2d6201c41c89";
+    args={"tos":["f61c5add710ec23334db494fdb51367d888352fd","5d9cdda85093d68c28573ae9875eb32dbad6f0e0"], "values":["100000000000000000000","100000000000000000000"]} 
+    chain.rpc.transferToken(from,token,args).then(function(result){
+        console.log(result)
+    }).catch(function(error){
+        console.log(error);
+    })
 
 }).catch(function (err) {
     console.log(err)
@@ -100,7 +103,7 @@ chain.rpc.getBalance(from.keypair.hexAddress).then(function(result){
 //   System.out.println(str);
 
 
-var hex='0x706172616d6574657220696e76616c69642c2073656e646572206e6f6e6365206973206c61726765207468616e207472616e73616374696f6e206e6f6e6365';
+var hex='0x657865636572726f723a706172616d6574657220696e76616c69642c2062616c616e6365206f66207468652073656e646572206973206e6f7420656e6f75676820666f7220676173';
 
 // 16进制转字符串
 function hex2str(hex) {

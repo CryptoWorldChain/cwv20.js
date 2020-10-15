@@ -74,6 +74,7 @@ export default {
         a=a.div(new BN("1".padEnd(19-precision,0)));
         return (a.toString(10));
     },
-    KeyPair:lib.KeyPair,
+    KeyPair:lib.KeyPair,   	
+    keystore:lib.keystore,
     rpc:lib.rpc
 }
