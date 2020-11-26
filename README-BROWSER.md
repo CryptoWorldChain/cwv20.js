@@ -185,7 +185,7 @@ sign transfer token
  * @param {*} args {"tos":["",""], "values":["",""]} 
  * @result {"tx":tx}
  */
-var sign = chain.default.rpc.signTransferToken(from,extdata,args);
+var sign = chain.default.rpc.signTransferToken(from,token,args);
 ```
 
 Create contract

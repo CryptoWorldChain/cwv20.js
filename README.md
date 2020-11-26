@@ -133,11 +133,10 @@ brew.rpc.transfer(from,extdata,args).then(function(result){
 sign transfer
 ```js
 /**
- * sign transfer 
- * @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
- * @param {*} token
- * @param {*} args {"tos":["",""], "values":["",""]} 
- * @result {"tx":tx}
+ * sign transfer normal
+ * @param {*} from {"keypair":{"address":"","privateKey":"",nonce:10}}
+ * @param {*} exdata
+ * @param {*} args [{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":""}]
  */
 //only get sign
 var sign = brew.rpc.signTransfer(from,extdata,args);
