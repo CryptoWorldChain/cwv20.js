@@ -1,0 +1,369 @@
+syntax = "proto3";
+
+package org.brewchain.mcore.actuators.evfs.gens;
+
+
+enum FileActionCMD{
+	REQ = 0; // 请求发送文件EVNode
+	PUT = 1; // 发送文件EVSegment
+	QND = 2;// 读取EVNode信息
+	GET = 3; // 获取文件信息
+	//文件操作
+	
+}
+
+
+
+
+//第一阶段，申请上传
+message ReqEVNode {
+	bytes 	from = 1;//从哪个地址来的
+	string	token_addr_or_symbol = 2;//token地址
+	EVNode 	node = 3;//node info,如果为空，则返回矿机地址
+	bytes	sign = 4;//是否包含签名，如果包含，则直接创建好交易返回
+}
+
+message RespEVNode {
+	int32		ret_code = 1;
+	string		ret_msg = 2;
+	EVNode		evnode = 3;//
+	repeated 	EVSegment segments = 4;
+	repeated 	bytes	miner_addr = 5;
+	repeated 	bytes	miner_pub_keys = 6;
+	repeated 	string	miner_uri = 7;
+	bytes		tx_hash = 8;//如果签名成功提交交易返回
+	bytes		code_data = 9;
+}
+
+//第二阶段，申请上传
+message ReqPutSegment {
+	bytes 		tx_req_hash = 1;//请求的hash
+	EVSegment	cur_part = 2;
+	bytes   	contents = 3; 
+	int32   	offset = 4;
+	int32		compress = 5;
+	bool		from_client = 6;//
+	repeated bytes		replia_miners_addr = 7;//副本的地址
+	repeated bytes		replia_secret_key = 8;//副本的私钥(通过公钥加密)
+}
+
+message RespPutSegment {
+	int32	ret_code = 1;
+	string	ret_msg = 2;
+}
+
+
+message ReqReadEVNode {
+	bytes	node_uuid = 1;//请求的内容
+	bytes	sign = 2;//
+}
+
+message RespReadEVNode {
+	int32	ret_code = 1;
+	string	ret_msg = 2;
+	EVNode		ev_node = 3;//
+
+	repeated 	EVSegment segment = 4;//
+	
+	repeated 	bytes	miner_addr = 5;
+	repeated 	bytes	miner_pub_keys = 6;
+	repeated 	string	miner_uri = 7;
+	
+	
+}
+
+//获取文件信息
+message ReqGetSegment {
+	bytes	node_uuid = 1;//请求的内容
+	bytes  	segment_uuid = 2;//获取某个部分，如果空，则response的data没信息
+	int32	offset = 3;
+	int32	limit = 4;
+	bytes	sign = 10;//
+}
+
+message RespGetSegment {
+	int32	ret_code = 1;
+	string	ret_msg = 2;
+	bytes	data = 3;//文件内容
+}
+
+
+
+
+enum ActionModule{
+	POC = 0; // evfs相关
+};
+
+enum ActionCMD{
+	FUN = 0;//调用合约函数
+	QUE = 1;//查询接口
+	BMS = 2;//开始对某种存储域进行开始挖矿
+	QUS = 3;//查询存储域的信息
+	
+	//文件操作
+	
+}
+
+
+message BlankSector{//共256字节
+	int32	sno = 1;//文件中的序号，4字节
+	int32	derived_no = 2;//派生节点序号，4字节，根据这个派生去生成私钥，对数据进行签名
+	int64	timestamp = 3;//时间，8字节
+	bytes	parent_hash = 4;//父节点的hash，sha3算法，32字节，作为当前节点签名消息
+	bytes	sign = 5;//当前节点的签名,128字节，
+	bytes   current_hash = 6;//当前签名的hash，32字节，作为子字节点的输入
+	bytes	node_hash = 7;//字节点
+	bytes   paddings = 10;//剩余的补0
+}
+
+
+enum AllocStatus{
+	READY = 0;
+	WRITING = 1;
+	SEALED = 2;
+}
+message FSIndex{
+	
+	bytes	cur_fid = 1;
+	bytes	last_fid = 2;
+	int32	cur_sector = 3;
+	int32 	last_sector = 4;
+	
+	int64	apply_time = 5;
+	int64	time_out_ms = 6;
+	int64	bootstrap_rand = 7;
+	
+	AllocStatus	status = 8;
+	
+	bytes	domain = 10;
+	bytes	current_alloc_bytes = 20;
+	bytes   total_alloc = 21;
+	bytes	total_used = 22;
+	
+}
+
+message EVNode{
+	bytes 	owner_address = 1;//从哪个地址来的
+	bytes	domain_address = 2;
+	bytes	node_uuid = 3;
+	bytes	permissions = 4;//属性，[000,000,000] R(可读),W(可写),P(价格可售)
+	bytes 	node_name = 5;//文件名
+	bytes 	ext_desc = 6;//文件描述
+	int64 	node_size = 7;	//文件大小
+	int64	alloc_size = 8;//占用空间大小，sector的整数倍	
+	int64 	salts = 9;//
+	int32	replicas = 10;//备份个数
+	int32 	slices = 11;//分片数量
+	bytes	parent_path = 12;//文件路径
+	int64	sync_chain_dead_line=13;//上链时间限制(以块为单位)
+	bytes	extra_fee_per_byte= 14;//每个字节副本可以享受的额外奖励
+	bytes	license_fee = 15;//当用户读取时给矿工的奖励
+	bytes	license_price = 16;//当用户读取时给owner的奖励
+	bytes	license_period = 17;//授权时效性
+	int64	authorized_count = 18;//授权地址数
+	int64	segment_count = 19;//分片完成数量
+	int64	segment_replia_count = 20;//分片副本证明数量
+}
+
+
+message EVSegment{
+	int32	node_index = 1;
+	int64	offset = 2;
+	int32	segment_size = 3;
+	int32	alloc_size = 4;//占用空间大小
+	bytes	segment_uuid = 5;
+	bytes	node_uuid = 6;
+	repeated bytes	miners_address = 7;//在哪些节点
+	bytes	extra_fee = 8;//该分片有多少token
+	bytes	md5 = 9;
+	bytes	root_hash = 10;
+	bytes 	owner_address = 11;//从哪个地址来的
+	bytes	domain_address = 12;
+	bytes	sign = 13;//签名信息
+}
+
+
+message LocEVFSTokenList{
+	repeated string	symbol = 1;
+	repeated string name = 2;
+	repeated bytes	address = 3;
+}
+
+message TokenEVFSInfo{
+	bytes		mortgaged_coin = 1;//抵押币类型,如果为0，则是主链币
+	bytes		pfand_per_byte = 2;//每字节的抵押金
+	int64		released_period = 3;//抵押时长
+	int64		startup_block = 4;//开始挖矿的时间
+	int32		endup_block = 5;//结束挖矿时间，-1表示无限制
+	int32		interval_blocks = 6;//挖矿的时间间隔
+	int32		min_blank_sectors = 7;//最小申请的扇区数
+	int32		max_blank_sectors = 8;//最大申请的扇区数
+	int32		default_replica_factor = 9;//备份因子，默认为3
+	int32		timeout_blocks_alloc = 10;//挖空块的最大时间间隔，默认为0取挖矿时间间隔
+	int32		timeout_blocks_replica	= 11;//副本证明的超时块
+	int32		blocks_proof_of_time = 12;//时空证明的时间间隔，默认为挖矿时间间隔*100
+	int32		timeout_post = 13;//时空证明的超时时间
+	int32		bft_ratio = 14;//拜占庭参数，默认为1/3
+	bytes		print_liquidity = 15;//预先给出的数量
+	int32		min_free_mb = 16;//至少有多少MB的虚拟空间
+	int32		min_free_mb_alloc_sectors = 17;//低于多少最少空间的时候，申请的扇区数
+	int64		max_segment_sectors = 18;//每个分片最大的扇区大小
+	int64		minecoin_log_lockcount = 19;
+	int64		minecoin_log_releasedcount = 20;
+	
+	int32		miners_count = 21;//一共有多少个资源节点参与
+	repeated 	int32	recents_miners = 22;//最近的节点是那些
+	bytes		vol_total = 23; //-->   volume b, total sealed
+	bytes		vol_used = 24;//-->  volume b , used match
+	bytes		vol_locked = 25;//-->  volume b , locked
+	bytes		balance_locked = 26; //--> balance locked
+
+	bytes		ext_data = 40;
+
+}
+enum Function{
+	UNKNOW = 0;
+	CONSTRUCTOR = 1;
+	SECTOR_SEALED = 2;
+	SECTOR_CHALLENGE  = 3;
+	SECTOR_TIME_PROOF = 4;
+	TRANSFER	 = 6;
+	TRUNCATE_SECTOR = 7;
+
+	EVNODE_PUT = 11;//buy.sectors
+	EVSEGMENT_SEALED = 12;//sealed segments
+	EVSEGMENT_CHALLENGE = 13;//
+	EVSEGMENT_TIME_PROOF = 14;//sealedd segments
+
+	EVNODE_BUY = 15;//buy.EVnode
+	EVNODE_UPDATE = 16;//buy.EVnode
+	
+}
+
+message ContractEVFS {
+	//函数操作类型：{
+	//1.constructor(string name,string symbol,int decimals ) public returns (address);//开始准备格式化盘
+	//2.sealedSector(bytes block_hash,bytes proofs) public returns (bool);//开始准备格式化盘
+	//3.sectorChallenge(bytes sector_id,bytes rand_seeds) public returns (bool);//
+	//4.sectorTimeProof(bytes challenge_id,bytes proofs) public returns (bool);//
+	//5.transfers(address to[], uint256 value[]) public returns (bool);
+	//6.requestSector(int256 orderinfo[]); value[0]:sector_count数量,value[1]:sector_price单价,value[2]:replica副本数//单价
+	//
+	//7.sectorRequest(address to[], uint256 value[]) public returns (bool);
+	//4.print(address to[],uint256 value[]) public returns(bool);
+	//5.burn(uint value) public returns(bool);销毁
+	//6.construct_fixSupply(address to[],uint256 []values) public returns (bool);创建合约
+	//7.construct_printable(address to[],uint256 []values,bytes exdatas) public returns (bool);创建合约
+	//8.addManagers(address to[]);
+	//9.rmManagers(address to[]);
+	//}
+	
+	Function	function = 1;//
+	bytes		from = 2;
+	repeated  	bytes	tos=3;
+	repeated  	bytes	values = 4;
+	repeated  	bytes	managers=5;
+	bytes   	ext_datas = 6;//扩展信息
+
+	string		name = 10;//构建函数时候使用
+	string		symbol = 11;//构建函数时候使用
+	int32		decimals = 12;//精度构建函数时候使用
+	
+	bytes		block_hash = 20;
+	bytes		sector_id = 21;
+	bytes		proofs = 22;
+	bytes 		rand_seeds = 23;
+	bytes		challenge_id = 24;
+	bytes		miner_proofs = 25;//证明这个交易属于这个地址的zksnark.prove(pk,tree(proofs,address,addr_nonce))
+	
+	TokenEVFSInfo  evfs_info = 30;
+	EVNode		ev_node = 31;
+	EVSegment	ev_segment = 32;
+}
+
+
+message	TokenEVFSValue{
+	bytes	vol_total = 1; //-->   volume b, total
+	bytes	vol_used = 2;//-->  volume b , used
+	bytes	vol_locked = 3;//-->  volume b , locked
+	int64	minecoin_log_lockcount = 4;
+	int64	minecoin_log_releasedcount = 5;
+	bytes	miner_pub_key = 6;
+	bytes	ext_data = 10;
+}
+
+message	MineCoinLog{
+	int64	logid = 1;
+	bytes 	locked_token = 2;
+	int32 	sector_count = 3;
+	int64 	start_block = 4;
+	int64 	release_block = 5;
+	int64 	real_released_block = 6;
+	bytes 	ext_data = 7;
+}
+
+
+
+message ReqCallEVFSContract{
+	ContractEVFS data = 1;
+}
+
+message RespCallEVFSContract{
+	bytes datas = 1;
+	int32 ret_code = 2;
+	string	ret_message = 3;
+}
+
+
+
+message ReqRegisterStorageMiner{
+	bytes 	address = 1;
+	string	symbol = 2;
+}
+
+message RespRegisterStorageMiner{
+	bytes 	datas = 1;
+	int32 	ret_code = 2;
+	string	ret_message = 3;
+}
+
+
+message ReqStorageDomain{
+	bytes address = 1;
+	string	symbol = 2;
+	int32 miner_skip = 3;
+	int32 miner_pagecount = 4;
+}
+
+
+message RespStorageDomain{
+	int32 	ret_code = 1;
+	string	ret_message = 2;
+
+	TokenEVFSInfo 	info = 3;
+	bytes	total_supply = 4;
+	bytes   total_locked = 5;
+	bytes	vol_total = 6;
+	bytes	vol_used = 7;
+	bytes	vol_locked = 8;
+
+	string  vol_total_h = 9;
+	string  vol_used_h = 10;
+	string  vol_locked_h = 11;
+	
+	
+	FSIndex   local_info = 12;
+	string  local_alloc_h = 13;
+	string  local_used_h = 14;
+	
+	repeated MinerInfo  miners = 15;
+		
+	int32 miner_skip = 30;
+	int32 miner_pagecount = 31;
+}
+
+	
+message MinerInfo{
+	bytes	address = 1;
+	TokenEVFSValue  minersInfo = 2;
+} 

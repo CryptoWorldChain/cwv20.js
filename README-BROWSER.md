@@ -85,7 +85,8 @@ Send transfer，support balance transfer，token transfer， crypto token transf
 */
 var kp = chain.default.KeyPair.genFromPrikey(
   '89611e9ed751b2bb0f2a84d1b364bd6ef97a512a7ad0b1b50241168ff3add985')
-  
+
+
 /**
 * transfer
 * @param {*} from {"keypair":{"hexAddress":"","privateKey":"",nonce:10}}
@@ -100,6 +101,8 @@ var kp = chain.default.KeyPair.genFromPrikey(
 kp.nonce=10;
 kp.hexAddress=chain.default.rpc.removeCVN(kp.hexAddress);
 var from={keypair:kp};
+
+
 
 var args=[{"address":chain.default.rpc.removeCVN("066c03fcc3048863f72b051530e5a212fb9233f6"),"amount":1}]
 var exdata=""

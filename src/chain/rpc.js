@@ -6,6 +6,7 @@ import TransactionInfo from "./transaction.js"
 import KeyPair from "./keypair";
 import BN from 'bn.js';
 import proto from './protos'
+import sha3 from 'sha3';
 
 class PatternMethod extends Method {
 	constructor(pattern, uri) {
@@ -168,8 +169,48 @@ var __sign = function (from, type, exdata,args) {
 		case transactionType.RC721_CONTRACT:
 			console.log("RC721_CONTRACT");
 			break;
-		case transactionType.CVM_CONTRACT:
+		case transactionType.EVFS_AUTH:
+			
+			let ContractEVFS=proto.load("ContractEVFS");
+			let code=ContractEVFS.create();
+			code.function=ContractEVFSFunction.EVNODE_BUY;
 
+			let EVNode = proto.load("EVNode");
+			let evNode=EVNode.create();
+			if(args.nodeUuid){
+				evNode.nodeUuid=Buffer.from(removePrefix(args.nodeUuid),'hex');
+			}
+			if(args.licenseFee){
+				evNode.licenseFee=new BN(args.licenseFee).toArrayLike(Buffer);//.toArrayLike(Buffer);
+			}
+			if(args.licensePrice){
+				evNode.licensePrice=new BN(args.licensePrice).toArrayLike(Buffer);//.toArrayLike(Buffer);
+			}
+			if(args.licenseFee || args.licensePrice){
+				code.function=ContractEVFSFunction.EVNODE_UPDATE;
+			}
+			if (args.tos) {
+				let tos = [];
+				for (let j = 0; j < args.tos.length; j++) {
+					tos.push(Buffer.from(removePrefix(args.tos[j]), "hex"));
+				}
+				code.tos = tos;
+			}
+			if(args.hasOwnProperty("values")){
+				if (args.values) {
+					let values = [];
+					for (let j = 0; j < args.values.length; j++) {
+						values.push(new BN(args.values[j]).toArrayLike(Buffer));
+					}
+					code.values = values;
+				}
+			}
+			code.from=Buffer.from(removePrefix(from.keypair.hexAddress),'hex');
+			code.evNode=evNode;
+			opts = getTransactionOpts(from, type, exdata, Buffer.from(ContractEVFS.encode(code).finish(),"hex"));
+
+			break;
+		case transactionType.CVM_CONTRACT:
 			if (!args || !args.data) {
 				reject("缺少参数data")
 			} else {
@@ -254,6 +295,7 @@ var transactionType = {
 	RC20_CONTRACT: 2,//RC20交易
 	RC721_CONTRACT: 3,//RC721交易
 	CVM_CONTRACT: 4,//CVM合约调用
+	EVFS_AUTH:6
 };
 //crc20类型
 var functionType = {
@@ -265,6 +307,11 @@ var functionType = {
 	ADDMANAGERS: 6,
 	RMMANAGERS: 7
 }
+var ContractEVFSFunction = {
+	EVNODE_PUT:11,
+	EVNODE_BUY:15,
+	EVNODE_UPDATE:16
+}
 
 var removePrefix = function (addr) {
 	if (addr.startsWith('0x')) {
@@ -274,6 +321,13 @@ var removePrefix = function (addr) {
 	}
 }
 
+function base64Encode(input) {
+    var rv;
+    rv = encodeURIComponent(input);
+    rv = unescape(rv);
+    rv = window.btoa(rv);
+    return rv;
+}
 export default {
 	removeCVN:function(addr){
 		if (addr.startsWith('CVN') || addr.startsWith('cvn')) {
@@ -443,5 +497,129 @@ export default {
 			timestamp: d,
 			tx: args.data
 		};
+	},
+	/**
+	 * evfs上链签名
+	 * @param {*} from 
+	 * @param {*} args { 
+	 * 	"tokenAddrOrSymbol":"evs","nodeSize":10000,"nodeName":"",
+	 * 	"extDesc":"","replicas":3,"slices":10,"tos":["",""],licenseFee:10,licensePrice:100,"permissions":"4"
+	 * }
+	 */
+	signReqUpload:function(from,args){
+		let ReqEVNode = proto.load("ReqEVNode")
+		let reqEVNode = ReqEVNode.create();
+
+		reqEVNode.from=Buffer.from(removePrefix(from.keypair.hexAddress),'hex');
+		reqEVNode.tokenAddrOrSymbol=args.tokenAddrOrSymbol;
+		let EVNode = proto.load("EVNode");
+		let evNode=EVNode.create();
+		var buffer = Buffer.alloc(1)
+		buffer[0]=args.permissions;
+		evNode.permissions=buffer;
+		evNode.nodeSize=args.nodeSize;
+		evNode.nodeName=Buffer.from(args.nodeName,"ascii");//ByteString.copyFrom(uploadFile.getName().getBytes())
+		evNode.extDesc=Buffer.from(args.extDesc,"ascii");//ByteString.copyFrom("test".getBytes())
+		evNode.salts=Date.now();
+		evNode.replicas=args.replicas;
+		evNode.slices=args.slices;
+
+		buffer=new Uint8Array(8);
+		buffer[7]=args.licenseFee;		
+		evNode.licenseFee=buffer;
+		buffer[7]=args.licensePrice
+		evNode.licensePrice=buffer;
+
+		let randSeed=Math.abs(evNode.salts);
+		let domainAddress=Buffer.from(evNode.domainAddress,'hex');
+		let ownerAddress=Buffer.from(evNode.ownerAddress,'hex');
+		let uuid=Buffer.concat([domainAddress,ownerAddress],domainAddress.length+ownerAddress.length);
+		let nonceBuffer=new BN(from.keypair.nonce).toArrayLike(Buffer);
+
+		let randSeedBuffer=new BN(randSeed).toArrayLike(Buffer);
+		uuid=Buffer.concat([uuid,nonceBuffer],uuid.length+nonceBuffer.length)
+		uuid=Buffer.concat([uuid,randSeedBuffer],uuid.length+randSeedBuffer.length);
+
+		let hash=sha3(256);
+		hash.update(Buffer.from(uuid));
+		let hashuuid=utils.toHex(hash.digest());
+		evNode.nodeUuid=hashuuid;
+		reqEVNode.node=evNode;
+
+		let ContractEVFS=proto.load("ContractEVFS");
+		let code=ContractEVFS.create();
+		code.function=ContractEVFSFunction.EVNODE_PUT;
+		if (args.tos) {
+			let tos = [];
+			for (let j = 0; j < args.tos.length; j++) {
+				tos.push(Buffer.from(args.tos[j], "hex"));
+			}
+			code.tos = tos;
+		}
+		if (args.values) {
+			let values = [];
+			for (let j = 0; j < args.values.length; j++) {
+				values.push(new BN(args.values[j]).toArrayLike(Buffer));
+			}
+			code.values = values;
+		}
+		code.from=reqEVNode.from;
+		code.symbol=reqEVNode.tokenAddrOrSymbol;
+		code.evNode=evNode;
+		
+		let  TransactionBody = proto.load("TransactionBody");
+		let txbody=TransactionBody.create();
+		txbody.address=reqEVNode.from;
+		txbody.nonce=from.keypair.nonce;
+		txbody.timestamp=new Date().getTime();
+		txbody.innerCodetype=6;
+		txbody.codeData=Buffer.from(ContractEVFS.encode(code).finish(), 'hex');
+		let ecdata = Buffer.from(TransactionBody.encode(txbody).finish());
+		let ecdataSign = from.keypair.ecHexSign(ecdata);
+		
+		reqEVNode.sign=Buffer.from(ecdataSign,"hex");
+		//Buffer.from(ReqEVNode.encode(reqEVNode).finish(),"hex")
+
+		let req={},reqNode={};
+		reqNode.permissions=Buffer.from(evNode.permissions,"hex").toString("hex");
+		reqNode.node_size=evNode.nodeSize;
+		reqNode.node_name=evNode.nodeName;
+		reqNode.ext_desc=evNode.extDesc;
+		reqNode.salts=evNode.salts;
+		reqNode.replicas=args.replicas;
+		reqNode.slices=args.slices;
+		reqNode.license_fee="0x".concat(new BN(args.licenseFee).toString(16));//.toArrayLike(Buffer);
+		reqNode.license_price="0x".concat(new BN(args.licensePrice).toString(16));//.toArrayLike(Buffer);
+		req.from=reqEVNode.from.toString("hex");
+		req.token_addr_or_symbol=reqEVNode.tokenAddrOrSymbol;
+		req.node=reqNode;
+		req.sign=reqEVNode.sign.toString("hex");
+		return req;
+	},
+	/**
+	 * evfs授权
+	 * @param {*} from 
+	 * @param {*} args { "nodeUuid":"0x00","tos":[],"values":[] }
+	 */
+	signEvfsAuth:function(from,args){
+		return __sign(from, transactionType.EVFS_AUTH,null, args);
+	},
+	/**
+	 * evfs价格修改
+	 * @param {*} from 
+	 * @param {*} args { "nodeUuid":"0x00","tos":[],"values":[],"licensePrice":"","licenseFee":"" }
+	 */
+	signEvfsUpdatePrice:function(from,args){
+		return __sign(from, transactionType.EVFS_AUTH,null, args);
+	},
+	/**
+	 * 签名反序列化
+	 * @param {*} args 
+	 */
+	signDecode:function(args){
+		let transactionInfo = proto.load("TransactionInfo");
+		// console.log(args.tx)
+		return transactionInfo.decode(Buffer.from(args.tx,"hex"));
 	}
+
 }

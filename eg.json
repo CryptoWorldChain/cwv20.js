@@ -1,0 +1,59 @@
+
+    {
+        "ret_code": 0,
+        "ret_msg": "success",
+        "evnode": {
+            "owner_address": "0x3c1ea4aa4974d92e0eabd5d024772af3762720a0",
+            "domain_address": "0x203153ca7609f3c83ee071609bdaf44d17666b74",
+            "node_uuid": "0x9e6ce9eda9f40a306add6f8101c26ea8bc4047a9464a9939ff85d3808f36d96a",
+            "permissions": "0x04",
+            "node_size": 10000,
+            "alloc_size": 10752,
+            "salts": 0,
+            "replicas": 0,
+            "slices": 3,
+            "sync_chain_dead_line": 1,
+            "authorized_count": 0,
+            "segment_count": 0,
+            "segment_replia_count": 0
+        },
+        "segments": [{
+            "node_index": 0,
+            "offset": 0,
+            "segment_size": 3584,
+            "alloc_size": 3584,
+            "segment_uuid": "0xfee7d1efcdfcfa4250a6cda16c50b3348782f3c7b31394220cb4820698e13077",
+            "node_uuid": "0x9e6ce9eda9f40a306add6f8101c26ea8bc4047a9464a9939ff85d3808f36d96a",
+            "miners_address": ["0x3c1ea4aa4974d92e0eabd5d024772af3762720a0"],
+            "extra_fee": "0x00",
+            "owner_address": "0x3c1ea4aa4974d92e0eabd5d024772af3762720a0",
+            "domain_address": "0x203153ca7609f3c83ee071609bdaf44d17666b74"
+        }, {
+            "node_index": 1,
+            "offset": 3584,
+            "segment_size": 3584,
+            "alloc_size": 3584,
+            "segment_uuid": "0x2ca1a6e9effa2055ef8e0880dc6212af73d59f552946cbf677924d3773829b9e",
+            "node_uuid": "0x9e6ce9eda9f40a306add6f8101c26ea8bc4047a9464a9939ff85d3808f36d96a",
+            "miners_address": ["0x3c1ea4aa4974d92e0eabd5d024772af3762720a0"],
+            "extra_fee": "0x00",
+            "owner_address": "0x3c1ea4aa4974d92e0eabd5d024772af3762720a0",
+            "domain_address": "0x203153ca7609f3c83ee071609bdaf44d17666b74"
+        }, {
+            "node_index": 2,
+            "offset": 7168,
+            "segment_size": 2832,
+            "alloc_size": 3584,
+            "segment_uuid": "0x9579c2d09844507de877d1b837a9eb685b5e97de9a27070eb98f7c5857eddead",
+            "node_uuid": "0x9e6ce9eda9f40a306add6f8101c26ea8bc4047a9464a9939ff85d3808f36d96a",
+            "miners_address": ["0x3c1ea4aa4974d92e0eabd5d024772af3762720a0"],
+            "extra_fee": "0x00",
+            "owner_address": "0x3c1ea4aa4974d92e0eabd5d024772af3762720a0",
+            "domain_address": "0x203153ca7609f3c83ee071609bdaf44d17666b74"
+        }],
+        "miner_addr": ["0x3c1ea4aa4974d92e0eabd5d024772af3762720a0"],
+        "miner_pub_keys": ["0xbe2f1ac3db2fa6baeb5013490e3c9d5230700a6699d3e7442dc0dcf36b66b5c72cae8251aeda966aa251690ca65bd98521be21e4e2970cf3c301739d2bc5cb3d"],
+        "miner_uri": ["tcp://192.168.0.186:5100"],
+        "tx_hash": "0xb073f0b5353e1db52b833f00a5d43824f55e20129d5945b6989d01c2602282b7a5",
+        "code_data": "0x080b12143c1ea4aa4974d92e0eabd5d024772af3762720a01a14203153ca7609f3c83ee071609bdaf44d17666b74220100fa015b0a143c1ea4aa4974d92e0eabd5d024772af3762720a01214203153ca7609f3c83ee071609bdaf44d17666b741a209e6ce9eda9f40a306add6f8101c26ea8bc4047a9464a9939ff85d3808f36d96a22010438904e40805458036801"
+    }

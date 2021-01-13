@@ -31,7 +31,7 @@ class PBLoader {
 		this.rootByType = new Map();
 		var _rbt = this.rootByType;
 		__pbfiles.keys().forEach(function (key) {
-		 	// console.log(`get pbfile:`+key+",=="+pbfiles(key))
+		 	// console.log(`get pbfile:`+key+",=="+__pbfiles(key))
 
 		 	try{
 		 		var source = __pbfiles(key);
@@ -39,7 +39,7 @@ class PBLoader {
 		 	// load(__pbfiles(key), function(err, root) {
 				if(ret&&ret.root){
 					var root=ret.root;
-					// console.log(`load == ${JSON.stringify(root)} ,err=${err}`);
+					// console.log(`load == ${JSON.stringify(root)}`);
 					var ret=nestedLoad(root,"");
 					// console.log("llo==."+ret)
 					// Types=Types.concat(ret);

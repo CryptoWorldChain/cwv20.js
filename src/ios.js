@@ -76,5 +76,10 @@ export default {
     },
     KeyPair:lib.KeyPair,   	
     keystore:lib.keystore,
-    rpc:lib.rpc
+    rpc:lib.rpc,
+	version:lib.VERSION,
+    protos:lib.Protos,
+    utils:lib.utils,
+    config:lib.config,
+    Buffer:lib.Buffer,
 }
