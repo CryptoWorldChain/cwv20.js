@@ -120,8 +120,10 @@ var kp = brew.KeyPair.genFromPrikey(
  *  }
 */
 kp.nonce=10;
+//remove prefix
+kp.hexAddress=brew.rpc.removeCVN(kp.hexAddress);
 var from={keypair:kp};
-var args=[{"address":"066c03fcc3048863f72b051530e5a212fb9233f6","amount":1}]
+var args=[{"address":brew.rpc.removeCVN("066c03fcc3048863f72b051530e5a212fb9233f6"),"amount":1}]
 var exdata=""
 brew.rpc.transfer(from,extdata,args).then(function(result){
     console.log(result)
